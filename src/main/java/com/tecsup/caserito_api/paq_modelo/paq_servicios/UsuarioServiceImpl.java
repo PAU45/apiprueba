@@ -4,7 +4,6 @@ import com.tecsup.caserito_api.paq_modelo.paq_daos.UsuarioRepository;
 import com.tecsup.caserito_api.paq_modelo.paq_entidades.Rol;
 import com.tecsup.caserito_api.paq_modelo.paq_entidades.RolEnum;
 import com.tecsup.caserito_api.paq_modelo.paq_entidades.Usuario;
-import com.tecsup.caserito_api.paq_modelo.paq_servicios.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
