@@ -21,7 +21,7 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long pk_usuario;
+    private Long pk_Usuario;
 
     @Column(nullable = false, unique = true)
     @NotNull

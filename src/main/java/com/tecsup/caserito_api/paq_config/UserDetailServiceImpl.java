@@ -13,7 +13,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -65,20 +65,30 @@ public class UserDetailServiceImpl implements UserDetailsService {
                 authorityList);
     }
 
+    public boolean existsByUsernameOrEmail(String username, String email) {
+        return usuarioRepository.findByUsuario(username).isPresent() || usuarioRepository.findByEmail(email).isPresent();
+    }
+
 
     public AuthResponse loginUser(AuthLoginRequest loginRequest) {
         String username = loginRequest.username();
         String password = loginRequest.password();
 
+        // Verifica si el usuario existe
+        Usuario usuario = usuarioRepository.findByUsuario(username)
+                .orElseThrow(() -> new BadCredentialsException("El usuario " + username + " es incorrecto"));
+
+        // Verifica si el password es correcto
+        if (!passwordEncoder.matches(password, usuario.getPassword())) {
+            throw new BadCredentialsException("Usuario o contraseña incorrectos");
+        }
+
         // Autenticación del usuario
         Authentication authentication = this.authenticate(username, password);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // Obtener el usuario y su ID
-        Usuario usuario = usuarioRepository.findByUsuario(username)
-                .orElseThrow(() -> new UsernameNotFoundException("El usuario " + username + " no existe"));
-
-        Long userId = usuario.getPk_usuario(); // Obtener el ID del usuario
+        // Obtener el ID del usuario
+        Long userId = usuario.getPk_Usuario();
 
         // Crear el token JWT
         String accessToken = jwtUtils.createToken(authentication, userId);
@@ -89,8 +99,9 @@ public class UserDetailServiceImpl implements UserDetailsService {
                 .collect(Collectors.toList());
 
         // Crear la respuesta AuthResponse
-        return new AuthResponse(username, accessToken, "Logeo Correcto", roles, true);
+        return new AuthResponse(username, "Login correcto", accessToken, roles, true);
     }
+
 
     public Authentication authenticate(String username, String password) {
         UserDetails userDetails = this.loadUserByUsername(username); // Se asume que lanza excepción si no existe
@@ -103,18 +114,29 @@ public class UserDetailServiceImpl implements UserDetailsService {
     }
 
     public AuthResponse createUser(AuthCreateUserRequest authCreateUserRequest) {
+        // Verifica si el usuario o correo ya existen
+        if (existsByUsernameOrEmail(authCreateUserRequest.username(), authCreateUserRequest.email())) {
+            return new AuthResponse(
+                    null,                             // username
+                    "El usuario o correo ya existen", // msg
+                    null,                             // jwt
+                    null,                             // roles
+                    false                             // status
+            );
+        }
+
+        // Si no existe, crea el usuario como lo estabas haciendo antes
         String username = authCreateUserRequest.username();
         String password = authCreateUserRequest.password();
         String email = authCreateUserRequest.email();
         String telefono = authCreateUserRequest.telefono();
         String direccion = authCreateUserRequest.direccion();
 
-        // Obtiene el rol Usuario
         Rol rolUser = Rol.builder()
-                .roleEnum(RolEnum.USER) // Asigna directamente el rol USER
+                .roleEnum(RolEnum.USER)
                 .build();
         Set<Rol> roles = new HashSet<>();
-        roles.add(rolUser); // Agrega el rol USER al conjunto de roles
+        roles.add(rolUser);
 
         Usuario usuario = Usuario.builder()
                 .usuario(username)
@@ -126,42 +148,33 @@ public class UserDetailServiceImpl implements UserDetailsService {
                 .email(email)
                 .telefono(telefono)
                 .direccion(direccion)
-                .roles(roles) // Establece los roles
+                .roles(roles)
                 .fecha_creacion(LocalDateTime.now())
                 .build();
 
-        // Guarda el usuario en la base de datos
         Usuario userCreated = usuarioRepository.save(usuario);
 
-        Long userId = userCreated.getPk_usuario();
-
-        // Crea la lista de autoridades a partir de los roles del usuario
+        Long userId = userCreated.getPk_Usuario();
         List<SimpleGrantedAuthority> authorityArrayList = userCreated.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRoleEnum().name())) // Asegúrate de que roleEnum sea del tipo correcto
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRoleEnum().name()))
                 .collect(Collectors.toList());
 
-        // Crea la autenticación
         Authentication authentication = new UsernamePasswordAuthenticationToken(userCreated.getUsuario(), userCreated.getPassword(), authorityArrayList);
-
-        // Genera el token de acceso
         String accessToken = jwtUtils.createToken(authentication, userId);
 
-        // Crea la lista de nombres de roles a partir de los roles del usuario
         List<String> rolesList = userCreated.getRoles().stream()
-                .map(role -> role.getRoleEnum().name()) // Obtiene solo el nombre del rol
+                .map(role -> role.getRoleEnum().name())
                 .collect(Collectors.toList());
 
-        // Corrige la instancia de AuthResponse
-        AuthResponse authResponse = new AuthResponse(
-                userCreated.getUsuario(), // username
-                "user created",           // msg
-                accessToken,              // jwt
-                rolesList,                // roles como List<String>
-                true                      // status
+        return new AuthResponse(
+                userCreated.getUsuario(),
+                "user created",
+                accessToken,
+                rolesList,
+                true
         );
-
-        return authResponse;
     }
+
 
 
 

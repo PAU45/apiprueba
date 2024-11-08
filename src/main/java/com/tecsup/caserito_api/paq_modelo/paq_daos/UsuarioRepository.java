@@ -15,10 +15,3 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
 
 }
-// Actualizar el rol de un usuario según su nombre
-    /*
-    @Modifying
-    @Transactional
-    @Query("UPDATE Usuario u SET u.rol = :rol WHERE u.nombre = :nombre")
-    int updateByUserRol(@Param("nombre") String nombre, @Param("rol") String rol);
-     */
