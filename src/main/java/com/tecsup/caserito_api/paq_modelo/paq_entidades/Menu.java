@@ -1,14 +1,11 @@
 package com.tecsup.caserito_api.paq_modelo.paq_entidades;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
+
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Setter
 @Getter

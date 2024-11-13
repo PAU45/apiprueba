@@ -38,7 +38,7 @@ public class Restaurante {
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_menu", nullable = false)
+    @JoinColumn(name = "fk_menu", nullable = true)
     private Menu fk_menu;
 
 }

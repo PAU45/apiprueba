@@ -8,6 +8,8 @@ public interface RestauranteService {
 
     Restaurante createOrUpdateRestaurante(Restaurante restaurante);
 
+    Restaurante createOrUpdateRestaurante(Restaurante restaurante, String token);
+
     List<Restaurante> getAllRestaurantes();
 
     Restaurante getRestauranteById(Long id);

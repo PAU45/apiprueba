@@ -10,16 +10,23 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/restaurantes")
+@RequestMapping("/caserito_api/restaurante")
 public class RestauranteController {
 
     @Autowired
     private RestauranteService restauranteService;
 
+    @GetMapping("/hola")
+    public String saludo() {
+        return "Hola, este es un mensaje de prueba";
+    }
+
     // Crear o actualizar restaurante
     @PostMapping
-    public ResponseEntity<Restaurante> createOrUpdateRestaurante(@RequestBody Restaurante restaurante) {
-        Restaurante savedRestaurante = restauranteService.createOrUpdateRestaurante(restaurante);
+    public ResponseEntity<Restaurante> createOrUpdateRestaurante(
+            @RequestBody Restaurante restaurante,
+            @RequestHeader(name = "Authorization") String token) {
+        Restaurante savedRestaurante = restauranteService.createOrUpdateRestaurante(restaurante, token);
         return new ResponseEntity<>(savedRestaurante, HttpStatus.CREATED);
     }
 

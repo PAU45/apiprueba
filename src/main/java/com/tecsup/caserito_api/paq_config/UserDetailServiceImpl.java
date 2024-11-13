@@ -118,10 +118,10 @@ public class UserDetailServiceImpl implements UserDetailsService {
         if (existsByUsernameOrEmail(authCreateUserRequest.username(), authCreateUserRequest.email())) {
             return new AuthResponse(
                     null,                             // username
-                    "El usuario o correo ya existen", // msg
-                    null,                             // jwt
-                    null,                             // roles
-                    false                             // status
+                    "El usuario o correo ya existen",
+                    null,
+                    null,
+                    false
             );
         }
 
