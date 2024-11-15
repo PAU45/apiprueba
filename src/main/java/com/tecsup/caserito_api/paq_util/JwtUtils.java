@@ -76,11 +76,11 @@ public class JwtUtils {
     public String extractRoles(DecodedJWT decodedJWT) {
         return decodedJWT.getClaim("roles").asString(); // Extrae los roles
     }
-/*
+
     //PARA OBTENER DE MANERA ESPECIFICA LOS CAMPOS
     public Claim getSpecificClaim(DecodedJWT decodedJWT, String claimName) {
         return decodedJWT.getClaim(claimName);
-    }*/
+    }
     public Map<String, Claim> retrieveAllClaims(DecodedJWT decodedJWT) {
         return decodedJWT.getClaims();
     }

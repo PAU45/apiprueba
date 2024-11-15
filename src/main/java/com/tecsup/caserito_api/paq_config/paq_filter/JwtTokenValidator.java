@@ -12,7 +12,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -34,6 +36,7 @@ public class JwtTokenValidator extends OncePerRequestFilter {
     protected void doFilterInternal(@NotNull HttpServletRequest request,
                                     @NotNull HttpServletResponse response,
                                     @NotNull FilterChain filterChain) throws ServletException, IOException {
+
         String jwtToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
@@ -42,26 +45,22 @@ public class JwtTokenValidator extends OncePerRequestFilter {
             try {
                 DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
                 String username = jwtUtils.extractUsername(decodedJWT);
-                String stringRoles = jwtUtils.extractRoles(decodedJWT);
-                Long userId = jwtUtils.extractUserId(decodedJWT);
+                String stringRoles = jwtUtils.getSpecificClaim(decodedJWT, "roles").asString();
 
-                // Convertir los roles en una colección de GrantedAuthority
-                String[] rolesArray = stringRoles.split(",");
-                Collection<? extends GrantedAuthority> authorities = Arrays.stream(rolesArray)
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+                Collection<? extends GrantedAuthority> roles = AuthorityUtils.commaSeparatedStringToAuthorityList(stringRoles);
+                SecurityContext context = SecurityContextHolder.getContext();
 
-                // Crear un objeto de autenticación
-                Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
+                Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, roles);
+                context.setAuthentication(authentication);
+                SecurityContextHolder.setContext(context);
 
-                // Establecer el contexto de seguridad
-                SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
-                // Manejo de errores, puedes establecer un código de error o respuesta según necesites
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
+                response.getWriter().write("Token inválido o expirado");
+                return; // No continuar con el filtro si el token es inválido
             }
         }
+
 
         // Continuar con la cadena de filtros
         filterChain.doFilter(request, response);

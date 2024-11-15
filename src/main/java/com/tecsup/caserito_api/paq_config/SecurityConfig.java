@@ -27,11 +27,6 @@ public class SecurityConfig {
     @Autowired
     private JwtUtils jwtUtils;
 
-    private static final String[] PUBLIC_ENDPOINTS = {
-            "/caserito_api/authentication/*"
-    };
-
-
     @Bean
     public SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception {
 
@@ -43,8 +38,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(http -> {
                     http
                             .requestMatchers(HttpMethod.POST, "/caserito_api/authentication/*").permitAll() // Permitir todos los POST en autenticación
-                            .requestMatchers(HttpMethod.GET, "/caserito_api/restaurante/hola").hasAnyRole("USER")
-                            .requestMatchers(HttpMethod.POST, "/caserito_api/restaurante/*").hasAnyRole("USER")
+                            .requestMatchers(HttpMethod.POST, "/caserito_api/restaurante/create").hasAuthority("USER")
+                            .requestMatchers(HttpMethod.GET, "/caserito_api/restaurante/prueba").hasAuthority("USER")
                             .anyRequest().authenticated(); // Cualquier otra solicitud requiere autenticación
                 })
                 .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)

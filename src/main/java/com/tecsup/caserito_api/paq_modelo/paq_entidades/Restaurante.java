@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-
 @Setter
 @Getter
 @Entity
@@ -33,6 +32,12 @@ public class Restaurante {
     @Size(max = 500)
     private String ubicacion;
 
+    @Column(nullable = true)
+    private Double latitud;
+
+    @Column(nullable = true)
+    private Double longitud;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_usuario", nullable = false)
     private Usuario usuario;
@@ -40,5 +45,4 @@ public class Restaurante {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_menu", nullable = true)
     private Menu fk_menu;
-
 }
