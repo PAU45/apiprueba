@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Setter
 @Getter
 @Entity
@@ -42,7 +45,11 @@ public class Restaurante {
     @JoinColumn(name = "fk_usuario", nullable = false)
     private Usuario usuario;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_menu", nullable = true)
-    private Menu fk_menu;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "restaurante_menu", joinColumns = @JoinColumn(name = "fk_restaurante"), inverseJoinColumns = @JoinColumn(name = "fk_menu"))
+    private Set<Menu> fk_menu = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "restaurante_detalle", joinColumns = @JoinColumn(name = "fk_restaurante"), inverseJoinColumns = @JoinColumn(name = "fk_detalle"))
+    private Set<Detalle> fk_detalle = new HashSet<>();
 }

@@ -14,13 +14,11 @@ public class RestauranteController {
 
     // Endpoint para crear un restaurante
     @PostMapping("/create")
-    public Restaurante crearRestaurante(@RequestBody Restaurante restaurante, @RequestHeader("Authorization") String authorizationHeader) {
-        // Eliminar el prefijo "Bearer " del token
-        String token = authorizationHeader.startsWith("Bearer ") ? authorizationHeader.substring(7) : authorizationHeader;
-
-        // Llamar al servicio para crear el restaurante usando el token JWT
-        return restauranteService.createOrUpdateRestaurante(restaurante, token);
+    public Restaurante crearRestaurante(@RequestBody Restaurante restaurante) {
+        // Llamar al servicio para crear o actualizar el restaurante
+        return restauranteService.createOrUpdateRestaurante(restaurante);
     }
+
 
 
     // Ruta GET de prueba para verificar la conectividad

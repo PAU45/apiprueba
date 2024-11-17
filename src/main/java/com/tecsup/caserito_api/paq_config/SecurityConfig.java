@@ -38,8 +38,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(http -> {
                     http
                             .requestMatchers(HttpMethod.POST, "/caserito_api/authentication/*").permitAll() // Permitir todos los POST en autenticación
-                            .requestMatchers(HttpMethod.POST, "/caserito_api/restaurante/create").hasAuthority("USER")
-                            .requestMatchers(HttpMethod.GET, "/caserito_api/restaurante/prueba").hasAuthority("USER")
+                            .requestMatchers(HttpMethod.GET, "/caserito_api/restaurante/prueba").hasAuthority("EMPRESA")
+
+                            .requestMatchers(HttpMethod.POST, "/caserito_api/user/update-user").hasAnyAuthority("USER", "EMPRESA")
+                            .requestMatchers(HttpMethod.POST, "/caserito_api/restaurante/create").hasAuthority("EMPRESA")
                             .anyRequest().authenticated(); // Cualquier otra solicitud requiere autenticación
                 })
                 .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)

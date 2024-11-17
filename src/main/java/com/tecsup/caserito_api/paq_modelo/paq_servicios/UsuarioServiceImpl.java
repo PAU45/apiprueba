@@ -22,6 +22,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+
     @Override
     public Usuario registrarUsuario(Usuario usuario) {
         // Verificar si el usuario ya existe
@@ -50,6 +51,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         // Establecer la fecha de creación automáticamente
         usuario.setFecha_creacion(LocalDateTime.now());
 
+        usuario.setFecha_modificacion(LocalDateTime.now());
         // Codificar la contraseña antes de guardarla
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
 
@@ -70,4 +72,5 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioRepository.findByUsuario(nombre)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
+
 }

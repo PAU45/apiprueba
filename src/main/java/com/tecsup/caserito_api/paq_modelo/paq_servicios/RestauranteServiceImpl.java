@@ -8,6 +8,8 @@ import com.tecsup.caserito_api.paq_modelo.paq_entidades.Usuario;
 import com.tecsup.caserito_api.paq_util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.json.JSONObject;
@@ -30,15 +32,15 @@ public class RestauranteServiceImpl implements RestauranteService {
     private String GOOGLE_MAPS_API_KEY;
 
     @Override
-    public Restaurante createOrUpdateRestaurante(Restaurante restaurante, String token) {
-        // Validar el token y extraer el userId
-        DecodedJWT decodedJWT = jwtUtils.validateToken(token);
-        Long userId = jwtUtils.extractUserId(decodedJWT);
+    public Restaurante createOrUpdateRestaurante(Restaurante restaurante) {
+        // Obtener el usuario desde la autenticación
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName(); // El nombre de usuario es el 'principal'
 
-        // Obtener el usuario desde el repositorio usando el userId
-         Usuario usuario = usuarioRepository.findById(userId)
+        // Obtener el usuario desde el repositorio usando el username
+        Usuario usuario = usuarioRepository.findByUsuario(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
+        System.out.println("El usario es:" + usuario);
         // Asignar el usuario al restaurante
         restaurante.setUsuario(usuario);
 
@@ -47,8 +49,10 @@ public class RestauranteServiceImpl implements RestauranteService {
         restaurante.setLatitud(coordinates[0]);
         restaurante.setLongitud(coordinates[1]);
 
+        // Guardar o actualizar el restaurante
         return saveOrUpdateRestaurante(restaurante);
     }
+
 
     @Override
     public List<Restaurante> getAllRestaurantes() {

@@ -8,6 +8,7 @@ import com.tecsup.caserito_api.paq_util.JwtUtils;
 import com.tecsup.caserito_api.paq_web.paq_dto.AuthCreateUserRequest;
 import com.tecsup.caserito_api.paq_web.paq_dto.AuthLoginRequest;
 import com.tecsup.caserito_api.paq_web.paq_dto.AuthResponse;
+import com.tecsup.caserito_api.paq_web.paq_dto.UpdateUserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,10 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,12 +33,15 @@ public class UserDetailServiceImpl implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private UsuarioRepository userRepository;
 
     @Autowired
     private JwtUtils jwtUtils;
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -110,8 +111,12 @@ public class UserDetailServiceImpl implements UserDetailsService {
             throw new BadCredentialsException("La contraseña es incorrecta");
         }
         // Crear el token de autenticación sin pasar la contraseña
-        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userDetails.getUsername(), null, userDetails.getAuthorities());
     }
+
+
+
+
 
     public AuthResponse createUser(AuthCreateUserRequest authCreateUserRequest) {
         // Verifica si el usuario o correo ya existen
@@ -125,7 +130,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
             );
         }
 
-        // Si no existe, crea el usuario como lo estabas haciendo antes
+        // Si no existe, crea el usuario
         String username = authCreateUserRequest.username();
         String password = authCreateUserRequest.password();
         String email = authCreateUserRequest.email();
@@ -150,6 +155,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
                 .direccion(direccion)
                 .roles(roles)
                 .fecha_creacion(LocalDateTime.now())
+                .fecha_modificacion(LocalDateTime.now())
                 .build();
 
         Usuario userCreated = usuarioRepository.save(usuario);
@@ -176,9 +182,88 @@ public class UserDetailServiceImpl implements UserDetailsService {
     }
 
 
+    public AuthResponse updateUserDate(UpdateUserRequest updateUserRequest) {
+        // Obtener el usuario autenticado
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();  // Obtener el nombre de usuario desde el contexto de seguridad
+
+        // Buscar el usuario en la base de datos
+        Usuario usuario = usuarioRepository.findByUsuario(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // Actualizar los campos del usuario solo si los valores no son nulos
+        if (updateUserRequest.username() != null) {
+            usuario.setUsuario(updateUserRequest.username());
+        }
+        if (updateUserRequest.email() != null) {  // Acceder directamente a las propiedades del record
+            usuario.setEmail(updateUserRequest.email());
+        }
+
+        if (updateUserRequest.telefono() != null) {
+            usuario.setTelefono(updateUserRequest.telefono());
+        }
+        if (updateUserRequest.direccion() != null) {
+            usuario.setDireccion(updateUserRequest.direccion());
+        }
+
+        // Si se proporciona una nueva contraseña, se debe encriptar antes de actualizarla
+        if (updateUserRequest.password() != null) {
+            usuario.setPassword(passwordEncoder.encode(updateUserRequest.password()));
+        }
+
+        // Agregar nuevos roles sin eliminar los roles existentes
+        if (updateUserRequest.rol() != null) {
+            Set<Rol> existingRoles = usuario.getRoles(); // Roles actuales del usuario
+            String roleName = updateUserRequest.rol();   // Obtener el rol enviado
+
+            if (roleName.equals("EMPRESA")) { // Verificar si el rol enviado es EMPRESA
+                RolEnum roleEnum = RolEnum.valueOf(roleName); // Convertir el rol a enum
+
+                // Verificar si el usuario ya tiene el rol EMPRESA
+                boolean hasEmpresaRole = existingRoles.stream()
+                        .anyMatch(role -> role.getRoleEnum() == RolEnum.EMPRESA);
+
+                // Si no tiene el rol EMPRESA, agregarlo
+                if (!hasEmpresaRole) {
+                    Rol newRole = Rol.builder()
+                            .roleEnum(roleEnum)
+                            .build();
+                    existingRoles.add(newRole); // Agregar el nuevo rol
+                    usuario.setRoles(existingRoles); // Actualizar los roles del usuario
+                }
+            }
+        }
 
 
 
+        // Actualiza la fecha de modificación
+        usuario.setFecha_modificacion(LocalDateTime.now());
+
+        // Guardar el usuario con los datos actualizados
+        usuarioRepository.save(usuario);
+
+        // Crear un JWT para el usuario actualizado
+        Long userId = usuario.getPk_Usuario();
+        List<SimpleGrantedAuthority> authorityArrayList = usuario.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRoleEnum().name()))
+                .collect(Collectors.toList());
+
+        Authentication updatedAuthentication = new UsernamePasswordAuthenticationToken(usuario.getUsuario(), usuario.getPassword(), authorityArrayList);
+        String accessToken = jwtUtils.createToken(updatedAuthentication, userId);
+
+        // Retornar la respuesta con los detalles actualizados
+        List<String> rolesList = usuario.getRoles().stream()
+                .map(role -> role.getRoleEnum().name())
+                .collect(Collectors.toList());
+
+        return new AuthResponse(
+                usuario.getUsuario(),
+                "Usuario actualizado correctamente",
+                accessToken,
+                rolesList,
+                true
+        );
+    }
 
 
 }
