@@ -19,8 +19,6 @@ public class RestauranteController {
         return restauranteService.createOrUpdateRestaurante(restaurante);
     }
 
-
-
     // Ruta GET de prueba para verificar la conectividad
     @GetMapping("/prueba")
     public String prueba() {
