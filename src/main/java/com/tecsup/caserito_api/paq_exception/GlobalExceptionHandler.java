@@ -13,6 +13,7 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    // Maneja las excepciones de validación de argumentos (cuando los datos no son válidos)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -25,5 +26,13 @@ public class GlobalExceptionHandler {
         });
 
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    // Maneja la excepción personalizada de restaurante ya existente
+    @ExceptionHandler(RestauranteExistenteException.class)
+    public ResponseEntity<Map<String, String>> handleRestauranteExistenteException(RestauranteExistenteException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("msg", ex.getMessage());  // Enviar el mensaje de error de la excepción
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 }

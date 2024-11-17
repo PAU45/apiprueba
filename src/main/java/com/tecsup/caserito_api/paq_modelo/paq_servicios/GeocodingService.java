@@ -9,24 +9,28 @@ import org.json.JSONObject;
 public class GeocodingService {
 
     @Value("${google.maps.api.key}")
-    private String googleApiKey;
+    private String GOOGLE_MAPS_API_KEY;
 
-    public double[] getCoordinates(String address) {
-        String url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + address + "&key=" + googleApiKey;
-        RestTemplate restTemplate = new RestTemplate();
-        String response = restTemplate.getForObject(url, String.class);
+    public double[] getCoordinates(String ubicacion) {
+        try {
+            String url = "https://maps.googleapis.com/maps/api/geocode/json?address=" +
+                    ubicacion.replace(" ", "+") + "&key=" + GOOGLE_MAPS_API_KEY;
 
-        JSONObject json = new JSONObject(response);
-        if ("OK".equals(json.getString("status"))) {
-            JSONObject location = json.getJSONArray("results")
+            RestTemplate restTemplate = new RestTemplate();
+            String response = restTemplate.getForObject(url, String.class);
+
+            JSONObject jsonObject = new JSONObject(response);
+            JSONObject location = jsonObject.getJSONArray("results")
                     .getJSONObject(0)
                     .getJSONObject("geometry")
                     .getJSONObject("location");
+
             double lat = location.getDouble("lat");
             double lng = location.getDouble("lng");
+
             return new double[]{lat, lng};
-        } else {
-            throw new RuntimeException("No se pudieron obtener las coordenadas para la dirección: " + address);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener coordenadas: " + e.getMessage());
         }
     }
 }

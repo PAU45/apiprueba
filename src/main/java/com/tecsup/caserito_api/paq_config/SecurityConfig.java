@@ -41,7 +41,11 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.GET, "/caserito_api/restaurante/prueba").hasAuthority("EMPRESA")
 
                             .requestMatchers(HttpMethod.POST, "/caserito_api/user/update-user").hasAnyAuthority("USER", "EMPRESA")
-                            .requestMatchers(HttpMethod.POST, "/caserito_api/restaurante/create").hasAuthority("EMPRESA")
+                            .requestMatchers(HttpMethod.POST, "/caserito_api/restaurante/*").hasAuthority("EMPRESA")
+                            .requestMatchers(HttpMethod.PUT, "/caserito_api/restaurante/update/{id}").hasAuthority("EMPRESA")
+                            .requestMatchers(HttpMethod.DELETE, "/caserito_api/restaurante/delete/{id}").hasAuthority("EMPRESA")
+
+
                             .anyRequest().authenticated(); // Cualquier otra solicitud requiere autenticación
                 })
                 .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)

@@ -4,13 +4,16 @@
 
 1. **Registrar usuario** usando el endpoint `sign-up`.
 2. **Iniciar sesión** para obtener un token de acceso.
-3. Usar el token para hacer solicitudes autenticadas.
-4. **Actualizar usuario** para cambiar información como email, teléfono y dirección. Recuerda que el token se invalida y necesitas obtener uno nuevo.
-5. **Convertirse en empresa** si el usuario no tiene ese rol, usando el endpoint de `create`.
-6. **Agregar un restaurante** proporcionando el nombre, ubicación y descripción.
+3. Probar autenticación.
+4.  Usar el token para hacer solicitudes autenticadas.
+5.  **Actualizar usuario** para cambiar información como email, teléfono y dirección. Recuerda que el token se invalida y necesitas obtener uno nuevo.
+6.  **Convertirse en empresa** si el usuario no tiene ese rol, usando el endpoint de `create`.
+7.  **Agregar un restaurante** proporcionando el nombre, ubicación y descripción.
+8.  Ver mi lista de restaurantes.
+9. Eliminar un restaurante
+10.  Editar informacion de mi restaurante
 
-## 1. Registrar Usuario
-
+## 1. Registrar usuario
 **Endpoint:**
 
 POST http://localhost:8080/caserito_api/authentication/sign-up
@@ -18,13 +21,13 @@ POST http://localhost:8080/caserito_api/authentication/sign-up
 **Cuerpo de la solicitud (JSON):**
 
 ```
-        {
-            "username": "hans",
-            "password": "12345678",
-            "email": "hans@tecsup.edu.pe",
-            "telefono": "128312832",
-            "direccion": "askdjnas"
-        }
+{
+    "username": "hans",
+    "password": "12345678",
+    "email": "hans@tecsup.edu.pe",
+    "telefono": "128312832",
+    "direccion": "askdjnas"
+}
 ```
 
 
@@ -44,10 +47,10 @@ POST http://localhost:8080/caserito_api/authentication/log-in
 *Cuerpo de la solicitud (JSON):*
 
 ```
-        {
-            "username": "hans",
-            "password": "12345678"
-        }
+{
+    "username": "hans",
+    "password": "12345678"
+}
 
 ```
 **Respuesta esperada:**
@@ -65,7 +68,7 @@ GET http://localhost:8080/caserito_api/restaurante/prueba
 *Copiar código*
 
 ``
-        Authorization: Bearer <tu_token_de_acceso>
+    Authorization: Bearer <tu_token_de_acceso>
 ``
 
 **Respuesta esperada:**
@@ -81,11 +84,11 @@ PUT http://localhost:8080/caserito_api/user/update-user
 *Cuerpo de la solicitud (JSON):*
 
 ```
-        {
-            "email": "nuevoemail@tecsup.edu.pe",
-            "telefono": "987654321",
-            "direccion": "Nueva dirección 123"
-        }
+{
+    "email": "nuevoemail@tecsup.edu.pe",
+    "telefono": "987654321",
+    "direccion": "Nueva dirección 123"
+}
 ```
 
 **⚠ Advertencia:**
@@ -107,9 +110,9 @@ POST http://localhost:8080/caserito_api/user/update-user
 *Cuerpo de la solicitud (JSON):*
 
 ```
-        {
-            "rol": "EMPRESA"
-        }
+{
+    "rol": "EMPRESA"
+}
 ```
 
 **Notas:**
@@ -123,21 +126,86 @@ El token debe incluir los permisos de usuario para esta operación.*
 
 **Endpoint:**
 
-bash
 
 POST http://localhost:8080/caserito_api/restaurante/create
 
 *Cuerpo de la solicitud (JSON):*
 
 ```
-        {
-            "nombre": "Parada 22",
-            "ubicacion": "Francisco de Orellana, Nueva Loja, Ecuador",
-            "descripcion": "Comida china 2"
-        }
+{
+    "nombre": "Parada 22",
+    "ubicacion": "Francisco de Orellana, Nueva Loja, Ecuador",
+    "descripcion": "Comida china 2"
+}
+
 ```
 
-Encabezados requeridos:
+**-----------------------------------------------------------------------------**
+
+## 8. Ver mi lista de restaurantes
+
+**Endpoint:**
+
+GET: http://localhost:8080/caserito_api/restaurante/mis-restaurantes
+
+**Notas:**
+
+*Con este Endpoint vera la lista de los restaurantes creados por el usario autenticado*
+
+
+**-----------------------------------------------------------------------------**
+## 9. Editar informacion de mi restaurante
+
+**Endpoint:**
+
+PUT: http://localhost:8080/caserito_api/restaurante/update/{id}
+
+*Cuerpo de la solicitud (JSON):*
+
+```
+
+{
+    "nombre": "Parada 22",
+    "ubicacion": "Francisco de Orellana, Nueva Loja, Ecuador",
+    "descripcion": "Comida china 2"
+}
+
+```
+
+**Notas:**
+
+*Solo ingresar los campos que se requiere cambiar*
+
+**-----------------------------------------------------------------------------**
+## 10. Eliminar un restaurante
+
+**Endpoint:**
+
+DELETE:http://localhost:8080/caserito_api/restaurante/delete/3
+
+*Posibles resultadhmos*
+
+````
+{
+    "msg": "Restaurante eliminado exitosamente"
+}
+
+````
+
+````
+{
+    "msg": "No tienes permiso para eliminar este restaurante."
+}
+
+````
+
+````
+{
+    "msg": "Restaurante no encontrado con el id: 50"
+}
+
+````
+**-----------------------------------------------------------------------------**
 
 **-----------------------------------------------------------------------------**
 
