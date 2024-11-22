@@ -4,9 +4,12 @@ FROM openjdk:22-jdk-slim
 # Establece el directorio de trabajo
 WORKDIR /app
 
-# Copia el archivo pom.xml y el archivo mvnw para asegurarte de que Maven está disponible
+# Copia el archivo pom.xml y mvnw
 COPY pom.xml mvnw* ./
 COPY .mvn/ .mvn/
+
+# Da permisos de ejecución al archivo mvnw
+RUN chmod +x mvnw
 
 # Copia el código fuente del proyecto
 COPY src/ ./src/
