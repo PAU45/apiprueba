@@ -9,9 +9,10 @@
 5.  **Actualizar usuario** para cambiar información como email, teléfono y dirección. Recuerda que el token se invalida y necesitas obtener uno nuevo.
 6.  **Convertirse en empresa** si el usuario no tiene ese rol, usando el endpoint de `create`.
 7.  **Agregar un restaurante** proporcionando el nombre, ubicación y descripción.
-8.  Ver mi lista de restaurantes.
-9. Eliminar un restaurante
-10.  Editar informacion de mi restaurante
+8. Ver lista de restaurantes.
+9. Ver mi lista de restaurantes.
+10. Eliminar un restaurante
+11. Editar informacion de mi restaurante
 
 ## 1. Registrar usuario
 **Endpoint:**
@@ -79,7 +80,7 @@ GET http://localhost:8080/caserito_api/restaurante/prueba
 ## 4. Actualizar Usuario
 **Endpoint:**
 
-PUT http://localhost:8080/caserito_api/user/update-user
+POST http://localhost:8080/caserito_api/user/update-user
 
 *Cuerpo de la solicitud (JSON):*
 
@@ -93,7 +94,7 @@ PUT http://localhost:8080/caserito_api/user/update-user
 
 **⚠ Advertencia:**
 
-**Actualizar el token:** 
+**Actualizar el token:**
 
 *Después de realizar esta operación, el token anterior se invalida.
 Obtén un nuevo token iniciando sesión nuevamente con tus credenciales actualizadas.*
@@ -135,7 +136,8 @@ POST http://localhost:8080/caserito_api/restaurante/create
 {
     "nombre": "Parada 22",
     "ubicacion": "Francisco de Orellana, Nueva Loja, Ecuador",
-    "descripcion": "Comida china 2"
+    "descripcion": "Comida china 2",
+    "tipo": "Postres"
 }
 
 ```
@@ -154,7 +156,20 @@ GET: http://localhost:8080/caserito_api/restaurante/mis-restaurantes
 
 
 **-----------------------------------------------------------------------------**
-## 9. Editar informacion de mi restaurante
+
+## 9. Ver lista de restaurantes
+
+**Endpoint:**
+
+GET: http://localhost:8080/caserito_api/restaurante/all
+
+**Notas:**
+
+*Con este Endpoint vera la lista de los restaurantes*
+
+
+**-----------------------------------------------------------------------------**
+## 10. Editar informacion de mi restaurante
 
 **Endpoint:**
 
@@ -165,9 +180,7 @@ PUT: http://localhost:8080/caserito_api/restaurante/update/{id}
 ```
 
 {
-    "nombre": "Parada 22",
-    "ubicacion": "Francisco de Orellana, Nueva Loja, Ecuador",
-    "descripcion": "Comida china 2"
+    "nombre": "Parada 22"
 }
 
 ```
@@ -177,11 +190,11 @@ PUT: http://localhost:8080/caserito_api/restaurante/update/{id}
 *Solo ingresar los campos que se requiere cambiar*
 
 **-----------------------------------------------------------------------------**
-## 10. Eliminar un restaurante
+## 11. Eliminar un restaurante
 
 **Endpoint:**
 
-DELETE:http://localhost:8080/caserito_api/restaurante/delete/3
+DELETE:http://localhost:8080/caserito_api/restaurante/delete/{id}
 
 *Posibles resultadhmos*
 
@@ -206,6 +219,10 @@ DELETE:http://localhost:8080/caserito_api/restaurante/delete/3
 
 ````
 **-----------------------------------------------------------------------------**
+## 12. Obtener mis datos
+
+**Endpoint:**
+GET: http://localhost:8080/caserito_api/user/me
 
 **-----------------------------------------------------------------------------**
 

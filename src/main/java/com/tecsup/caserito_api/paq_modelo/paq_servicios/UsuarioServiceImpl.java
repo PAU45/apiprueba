@@ -22,6 +22,14 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private AuthService authService;
+
+    @Override
+    public Usuario getAuthenticatedUser() {
+        // Utiliza AuthService para obtener el usuario autenticado
+        return authService.getAuthenticatedUser();
+    }
 
     @Override
     public Usuario registrarUsuario(Usuario usuario) {
