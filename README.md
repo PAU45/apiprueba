@@ -238,4 +238,6 @@ GET: http://localhost:8080/caserito_api/user/me
 ```
 
 *Actualiza tu token después de modificar datos sensibles del usuario como correo, contraseña o roles.
-Los roles válidos actualmente son: USER y EMPRESA.*
+Los roles válidos actualmente son: USER y EMPRESA.*+
+
+

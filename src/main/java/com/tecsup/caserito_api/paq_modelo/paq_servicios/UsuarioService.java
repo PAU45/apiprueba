@@ -1,8 +1,9 @@
 package com.tecsup.caserito_api.paq_modelo.paq_servicios;
 import com.tecsup.caserito_api.paq_modelo.paq_entidades.Usuario;
+import com.tecsup.caserito_api.paq_web.paq_dto.UserResponse;
 
 public interface UsuarioService {
-    Usuario getAuthenticatedUser();
+    UserResponse getAuthenticatedUser();
 
     Usuario registrarUsuario(Usuario usuario);
     Usuario obtenerUsuarioPorNombre(String nombre);
