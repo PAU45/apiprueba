@@ -47,6 +47,9 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.GET, "/caserito_api/restaurante/all").hasAnyAuthority("USER", "EMPRESA")
                             .requestMatchers(HttpMethod.PUT, "/caserito_api/restaurante/update/{id}").hasAuthority("EMPRESA")
                             .requestMatchers(HttpMethod.DELETE, "/caserito_api/restaurante/delete/{id}").hasAuthority("EMPRESA")
+
+                            .requestMatchers(HttpMethod.PUT, "/caserito_api/comentarios/agregar").hasAnyAuthority("USER")
+                            .requestMatchers(HttpMethod.GET, "/caserito_api/comentarios/restaurante/{restauranteId}").hasAnyAuthority("USER")
                             .anyRequest().authenticated();
                 })
                 .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)
@@ -76,12 +79,12 @@ public class SecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // Permitir todas las rutas
+                registry.addMapping("/**")
                         .allowedOrigins("*") // Permitir cualquier origen
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Métodos permitidos
-                        .allowedHeaders("*") // Permitir cualquier encabezado
-                        .exposedHeaders("Authorization") // Exponer encabezados al cliente
-                        .allowCredentials(false); // No permitir credenciales (cookies, etc.)
+                        .allowedHeaders("*")
+                        .exposedHeaders("Authorization")
+                        .allowCredentials(false);
             }
         };
     }

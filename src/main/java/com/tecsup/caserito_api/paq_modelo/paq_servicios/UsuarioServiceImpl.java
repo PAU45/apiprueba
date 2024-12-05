@@ -36,7 +36,8 @@ public class UsuarioServiceImpl implements UsuarioService {
                 usuario.getUsuario(),
                 usuario.getEmail(),
                 usuario.getDireccion(),
-                usuario.getTelefono()
+                usuario.getTelefono(),
+                usuario.getAvatar()
         );
     }
 

@@ -6,10 +6,12 @@ import com.tecsup.caserito_api.paq_modelo.paq_entidades.Usuario;
 import com.tecsup.caserito_api.paq_modelo.paq_daos.ComentarioRepository;
 import com.tecsup.caserito_api.paq_modelo.paq_daos.RestauranteRepository;
 import com.tecsup.caserito_api.paq_web.paq_dto.ComentarioRequest;
+import com.tecsup.caserito_api.paq_web.paq_dto.ComentarioResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ComentarioServiceImpl implements ComentarioService {
@@ -44,12 +46,18 @@ public class ComentarioServiceImpl implements ComentarioService {
         return true;
     }
     @Override
-    public List<Comentario> obtenerComentariosPorRestaurante(Long restauranteId) {
-        // Obtener el restaurante por ID
+    public List<ComentarioResponse> obtenerComentariosPorRestaurante(Long restauranteId) {
         Restaurante restaurante = restauranteRepository.findById(restauranteId)
                 .orElseThrow(() -> new RuntimeException("Restaurante no encontrado"));
 
-        // Retornar los comentarios asociados a este restaurante
-        return comentarioRepository.findByRestaurante(restaurante);
+        // Obtener comentarios y mapearlos a ComentarioResponse
+        return comentarioRepository.findByRestaurante(restaurante).stream()
+                .map(comentario -> new ComentarioResponse(
+                        restaurante.getPk_restaurante(),
+                        comentario.getComentario(),
+                        comentario.getUsuario().getUsuario(),
+                        comentario.getUsuario().getAvatar() // Ajusta según tus entidades
+                ))
+                .collect(Collectors.toList());
     }
 }

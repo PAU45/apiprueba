@@ -14,6 +14,8 @@
 10. Eliminar un restaurante.
 11. Editar informacion de mi restaurante.
 12. Ver mis datos.
+13. Agregar un comentario.
+14. Listar comentarios por restaurante.
 
 ## 1. Registrar usuario
 **Endpoint:**
@@ -226,6 +228,58 @@ DELETE:http://localhost:8080/caserito_api/restaurante/delete/{id}
 GET: http://localhost:8080/caserito_api/user/me
 
 **-----------------------------------------------------------------------------**
+## 13. Agregar un comentario.
+
+**Endpoint:**
+
+POST: http://localhost:8080/caserito_api/comentarios/agregar
+
+*Cuerpo de la solicitud (JSON):*
+
+````
+{
+    "restauranteId": "1",
+    "comentario": "El mejor restaurante, la comida estaba muy rica 20/20"
+}
+
+````
+
+*Posibles resultadhmos*
+
+** Comentario agregado con éxito **
+
+**-----------------------------------------------------------------------------**
+## 14. Listar comentarios por restaurante
+**Endpoint:**
+
+GET: http://localhost:8080/caserito_api/comentarios/restaurante/{ID}
+
+*Resultado:*
+
+````
+[
+    {
+        "restauranteId": 1,
+        "comentario": "es un buen restaurante lo pase bonito",
+        "username": "diego",
+        "avatarUser": "https://www.movilzona.es/app/uploads-movilzona.es/2023/04/fto-perfil.jpg?x=480&y=375&quality=80"
+    },
+    {
+        "restauranteId": 1,
+        "comentario": "Lo pase mal es el peor restaurante",
+        "username": "abel",
+        "avatarUser": null
+    }
+]
+
+````
+
+
+** Comentario agregado con éxito **
+**-----------------------------------------------------------------------------**
+**-----------------------------------------------------------------------------**
+**-----------------------------------------------------------------------------**
+**-----------------------------------------------------------------------------**
 
 **⚠ Notas Finales**
 
@@ -238,6 +292,4 @@ GET: http://localhost:8080/caserito_api/user/me
 ```
 
 *Actualiza tu token después de modificar datos sensibles del usuario como correo, contraseña o roles.
-Los roles válidos actualmente son: USER y EMPRESA.*+
-
-
+Los roles válidos actualmente son: USER y EMPRESA.*
