@@ -50,6 +50,9 @@ public class SecurityConfig {
 
                             .requestMatchers(HttpMethod.PUT, "/caserito_api/comentarios/agregar").hasAnyAuthority("USER")
                             .requestMatchers(HttpMethod.GET, "/caserito_api/comentarios/restaurante/{restauranteId}").hasAnyAuthority("USER")
+
+                            .requestMatchers(HttpMethod.POST, "/caserito_api/calificacion/agregar").hasAnyAuthority("USER", "EMPRESA")
+                            .requestMatchers(HttpMethod.GET, "/caserito_api/calificacion/restaurante/{restauranteId}").hasAnyAuthority("USER", "EMPRESA")
                             .anyRequest().authenticated();
                 })
                 .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)
