@@ -47,17 +47,14 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Buscar el usuario en el repositorio
         Usuario usuario = usuarioRepository.findByUsuario(username)
                 .orElseThrow(() -> new UsernameNotFoundException("El usuario " + username + " no existe"));
 
-        // Lista para almacenar las autoridades (roles) del usuario
         List<SimpleGrantedAuthority> authorityList = usuario.getRoles()
                 .stream()
                 .map(rol -> new SimpleGrantedAuthority("ROLE_".concat(rol.getRoleEnum().name())))
                 .collect(Collectors.toList());
 
-        // Crear un UserDetails con el username, contraseña y lista de autoridades
         return new User(
                 usuario.getUsuario(),
                 usuario.getPassword(),
@@ -72,59 +69,43 @@ public class UserDetailServiceImpl implements UserDetailsService {
         return usuarioRepository.findByUsuario(username).isPresent() || usuarioRepository.findByEmail(email).isPresent();
     }
 
-
     public AuthResponse loginUser(AuthLoginRequest loginRequest) {
         String username = loginRequest.username();
         String password = loginRequest.password();
 
-        // Verifica si el usuario existe
         Usuario usuario = usuarioRepository.findByUsuario(username)
                 .orElseThrow(() -> new BadCredentialsException("El usuario " + username + " es incorrecto"));
 
-        // Verifica si el password es correcto
         if (!passwordEncoder.matches(password, usuario.getPassword())) {
             throw new BadCredentialsException("Usuario o contraseña incorrectos");
         }
 
-        // Autenticación del usuario
         Authentication authentication = this.authenticate(username, password);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // Obtener el ID del usuario
         Long userId = usuario.getPk_Usuario();
 
-        // Crear el token JWT
         String accessToken = jwtUtils.createToken(authentication, userId);
 
-        // Obtener los roles del usuario autenticado
         List<String> roles = authentication.getAuthorities().stream()
                 .map(grantedAuthority -> grantedAuthority.getAuthority().replace("ROLE_", ""))
                 .collect(Collectors.toList());
 
-        // Crear la respuesta AuthResponse
         return new AuthResponse(username, "Login correcto", accessToken, roles, true);
     }
 
-
     public Authentication authenticate(String username, String password) {
-        UserDetails userDetails = this.loadUserByUsername(username); // Se asume que lanza excepción si no existe
-        // Verificar si la contraseña es correcta
+        UserDetails userDetails = this.loadUserByUsername(username);
         if (!passwordEncoder.matches(password, userDetails.getPassword())) {
             throw new BadCredentialsException("La contraseña es incorrecta");
         }
-        // Crear el token de autenticación sin pasar la contraseña
         return new UsernamePasswordAuthenticationToken(userDetails.getUsername(), null, userDetails.getAuthorities());
     }
 
-
-
-
-
     public AuthResponse createUser(AuthCreateUserRequest authCreateUserRequest) {
-        // Verifica si el usuario o correo ya existen
         if (existsByUsernameOrEmail(authCreateUserRequest.username(), authCreateUserRequest.email())) {
             return new AuthResponse(
-                    null, // username
+                    null,
                     "El usuario o correo ya existen",
                     null,
                     null,
@@ -132,26 +113,23 @@ public class UserDetailServiceImpl implements UserDetailsService {
             );
         }
 
-        // Si no existe, crea el usuario
         String username = authCreateUserRequest.username();
         String password = authCreateUserRequest.password();
         String email = authCreateUserRequest.email();
         String telefono = authCreateUserRequest.telefono();
         String direccion = authCreateUserRequest.direccion();
+        String avatar = authCreateUserRequest.avatar();
 
-        // Inicialización de coordenadas
         double latitud = 0.0;
         double longitud = 0.0;
         String geolocalizationErrorMessage = null;
 
-        // Convierte la dirección a latitud y longitud
         if (direccion != null && !direccion.isEmpty()) {
             try {
                 double[] coordinates = geocodingService.getCoordinates(direccion);
                 latitud = coordinates[0];
                 longitud = coordinates[1];
             } catch (Exception e) {
-                // Si ocurre un error, se guarda el mensaje de error pero no se detiene la creación del usuario
                 geolocalizationErrorMessage = "Hubo problemas con la ubicación.";
             }
         }
@@ -171,6 +149,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
                 .credentialsNonExpired(true)
                 .email(email)
                 .telefono(telefono)
+                .avatar(avatar)
                 .direccion(direccion)
                 .latitud(latitud)
                 .longitud(longitud)
@@ -179,7 +158,6 @@ public class UserDetailServiceImpl implements UserDetailsService {
                 .fecha_modificacion(LocalDateTime.now())
                 .build();
 
-        // Guardar el usuario
         Usuario userCreated = usuarioRepository.save(usuario);
 
         Long userId = userCreated.getPk_Usuario();
@@ -194,7 +172,6 @@ public class UserDetailServiceImpl implements UserDetailsService {
                 .map(role -> role.getRoleEnum().name())
                 .collect(Collectors.toList());
 
-        // Si hubo un error en la geolocalización, se agrega al mensaje
         String finalMessage = "Usuario creado.";
         if (geolocalizationErrorMessage != null) {
             finalMessage += " Sin embargo, " + geolocalizationErrorMessage;
@@ -208,9 +185,6 @@ public class UserDetailServiceImpl implements UserDetailsService {
                 true
         );
     }
-
-
-
 
     public AuthResponse updateUserDate(UpdateUserRequest updateUserRequest) {
         // Obtener el usuario autenticado
@@ -228,10 +202,13 @@ public class UserDetailServiceImpl implements UserDetailsService {
         if (updateUserRequest.email() != null) {
             usuario.setEmail(updateUserRequest.email());
         }
+        if(updateUserRequest.avatar() !=null){
+            usuario.setAvatar(updateUserRequest.avatar());
+        }
         if (updateUserRequest.telefono() != null) {
             usuario.setTelefono(updateUserRequest.telefono());
         }
-        if (updateUserRequest.direccion() != null && !updateUserRequest.direccion().isEmpty()) {
+        if (updateUserRequest.direccion() != null) {
             usuario.setDireccion(updateUserRequest.direccion()); // Actualizamos la dirección
 
             // Convierte la dirección a latitud y longitud
@@ -325,9 +302,4 @@ public class UserDetailServiceImpl implements UserDetailsService {
                 true
         );
     }
-
-
-
-
-
 }

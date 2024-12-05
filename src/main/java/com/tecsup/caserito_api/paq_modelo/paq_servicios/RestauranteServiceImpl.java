@@ -3,9 +3,9 @@ package com.tecsup.caserito_api.paq_modelo.paq_servicios;
 import com.tecsup.caserito_api.paq_exception.ErrorResponse;
 import com.tecsup.caserito_api.paq_exception.RestauranteExistenteException;
 import com.tecsup.caserito_api.paq_modelo.paq_daos.RestauranteRepository;
-import com.tecsup.caserito_api.paq_modelo.paq_daos.UsuarioRepository;
 import com.tecsup.caserito_api.paq_modelo.paq_entidades.Restaurante;
 import com.tecsup.caserito_api.paq_modelo.paq_entidades.Usuario;
+import com.tecsup.caserito_api.paq_web.paq_dto.RestaurantResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class RestauranteServiceImpl implements RestauranteService {
@@ -54,8 +55,18 @@ public class RestauranteServiceImpl implements RestauranteService {
 
 
     @Override
-    public List<Restaurante> getAllRestaurantes() {
-        return restauranteRepository.findAll();
+    public List<RestaurantResponse> getAllRestaurantes() {
+        // Mapear la lista de Restaurantes a RestaurantResponse usando stream
+        return restauranteRepository.findAll().stream()
+                .map(restaurante -> new RestaurantResponse(
+                        restaurante.getPk_restaurante(),
+                        restaurante.getNombre(),
+                        restaurante.getDescripcion(),
+                        restaurante.getUbicacion(),
+                        restaurante.getTipo(),
+                        restaurante.getImg()
+                ))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -135,7 +146,9 @@ public class RestauranteServiceImpl implements RestauranteService {
         if(restauranteDetalles.getTipo() != null && !restauranteDetalles.getTipo().equals(restaurante.getTipo())) {
             restaurante.setTipo(restauranteDetalles.getTipo());
         }
-
+        if(restauranteDetalles.getImg() != null && !restauranteDetalles.getImg().equals(restaurante.getImg())) {
+            restaurante.setImg(restauranteDetalles.getImg());
+        }
         if (restauranteDetalles.getDescripcion() != null && !restauranteDetalles.getDescripcion().equals(restaurante.getDescripcion())) {
             restaurante.setDescripcion(restauranteDetalles.getDescripcion());
         }

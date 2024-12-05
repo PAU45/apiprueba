@@ -13,6 +13,7 @@ public record UpdateUserRequest(
         String telefono,
         String direccion,
         String rol,
+        String avatar,
         Double latitud,
         Double longitud
 ) {}

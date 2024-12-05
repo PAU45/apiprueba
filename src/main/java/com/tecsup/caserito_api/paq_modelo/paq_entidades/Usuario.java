@@ -63,6 +63,9 @@ public class Usuario {
     @Size(max = 15)
     private String telefono;
 
+    @Column(nullable = true)
+    private String avatar;
+
     @Column(nullable = false)
     private LocalDateTime fecha_creacion;
 
@@ -73,4 +76,6 @@ public class Usuario {
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "usuario_rol", joinColumns = @JoinColumn(name = "pk_usuario"), inverseJoinColumns = @JoinColumn(name = "pk_rol"))
     private Set<Rol> roles = new HashSet<>();
+
+
 }

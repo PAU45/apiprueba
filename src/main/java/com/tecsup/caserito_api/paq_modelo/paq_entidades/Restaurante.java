@@ -44,6 +44,9 @@ public class Restaurante {
     @Column(nullable = true)
     private String tipo;
 
+    @Column(nullable = true)
+    private String img;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fk_usuario", nullable = false)
     private Usuario usuario;
@@ -55,4 +58,6 @@ public class Restaurante {
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "restaurante_detalle", joinColumns = @JoinColumn(name = "fk_restaurante"), inverseJoinColumns = @JoinColumn(name = "fk_detalle"))
     private Set<Detalle> fk_detalle = new HashSet<>();
+
+
 }
