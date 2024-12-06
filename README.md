@@ -16,6 +16,10 @@
 12. Ver mis datos.
 13. Agregar un comentario.
 14. Listar comentarios por restaurante.
+15. Agregar calificacion.
+16. Ver calificacion.
+17. Agregar un favorito.
+18. Lista de restaurantes favoritos.
 
 ## 1. Registrar usuario
 **Endpoint:**
@@ -274,8 +278,87 @@ GET: http://localhost:8080/caserito_api/comentarios/restaurante/{ID}
 
 ````
 
+**-----------------------------------------------------------------------------**
+## 15. Agregar calificacion
+**Endpoint:**
 
-** Comentario agregado con éxito **
+POST: http://localhost:8080/caserito_api/calificacion/agregar
+
+*Body:*
+
+````
+{
+    "restauranteId": "4",
+    "calificacion": 4
+}
+````
+*Resultado:*
+
+````
+    Calificación agregada con éxito
+
+````
+**-----------------------------------------------------------------------------**
+## 15. Ver calificacion.
+**Endpoint:**
+
+GET: http://localhost:8080/caserito_api/calificacion/restaurante/{id}
+
+*Resultado:*
+
+````
+[
+    {
+        "restauranteId": 1,
+        "calificacion": 4,
+        "username": "hans",
+        "avatarUser": null
+    }
+]
+````
+**-----------------------------------------------------------------------------**
+## 16. Agregar un favorito
+**Endpoint:**
+
+POST: http://localhost:8080/caserito_api/favorito/agregar
+
+*Body:*
+
+````
+{
+    "restauranteId": 3
+}
+````
+**-----------------------------------------------------------------------------**
+## 16. Lista de restaurantes favoritos
+**Endpoint:**
+
+GET: http://localhost:8080/caserito_api/favorito
+
+*Resultado:*
+
+````
+[
+    {
+        "restaurantId": 1,
+        "nombre": "parada 22 no es",
+        "descripcion": "comida china no es",
+        "ubicacion": "Francisco de Orellana, Nueva Loja, Ecuador",
+        "tipo": "Postres",
+        "img": "https://png.pngtree.com/png-clipart/20200727/original/pngtree-restaurant-logo-design-vector-template-png-image_5441058.jpg"
+    },
+    {
+        "restaurantId": 3,
+        "nombre": "Parada 14",
+        "descripcion": "Comida china 2",
+        "ubicacion": "Francisco de Orellana, Nueva Loja, Ecuador",
+        "tipo": "Postres",
+        "img": "https://www.logoswilson.com/wp-content/uploads/2022/12/Realizacion-de-tu-logo-para-restaurante.png"
+    }
+]
+````
+
+**-----------------------------------------------------------------------------**
 **-----------------------------------------------------------------------------**
 **-----------------------------------------------------------------------------**
 **-----------------------------------------------------------------------------**
