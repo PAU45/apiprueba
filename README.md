@@ -20,7 +20,14 @@
 16. Ver calificacion.
 17. Agregar un favorito.
 18. Lista de restaurantes favoritos.
-19. Ruta para ubicacion de restaurante
+19. Ruta para ubicacion de restaurante.
+20. Agergar contactos(detalle).
+21. Ver contactos(detalle).
+22. Eliminar contacto(detalle).
+23. Agregar menu.
+24. Eliminar menu.
+25. Ver menus.
+26. Editar menu.
 
 ## 1. Registrar usuario
 **Endpoint:**
@@ -145,7 +152,10 @@ POST http://localhost:8080/caserito_api/restaurante/create
     "nombre": "Parada 22",
     "ubicacion": "Francisco de Orellana, Nueva Loja, Ecuador",
     "descripcion": "Comida china 2",
-    "tipo": "Postres"
+    "tipo": "Postres",
+    "img": "url",
+    "horaApertura": "08:00:00",
+    "horaCierre": "22:00:00"
 }
 
 ```
@@ -359,6 +369,117 @@ GET: http://localhost:8080/caserito_api/restaurante/{id}/ruta
 **-----------------------------------------------------------------------------**
 **-----------------------------------------------------------------------------**
 **-----------------------------------------------------------------------------**
+## 20. Agergar contactos(detalle)
+**Endpoint:**
+
+POST: http://localhost:8080/caserito_api/detalle/{id_restaurante}
+
+**Body**
+
+````
+{
+    "informacion": "930501210",
+    "tipo": "NUMERO"
+}
+````
+**-----------------------------------------------------------------------------**
+## 21.Ver contactos(detalle)
+**Endpoint:**
+
+GET: http://localhost:8080/caserito_api/detalle/{id_restaurante}
+
+**Tipos de datos admitidos**
+
+````
+    NUMERO,
+    FACEBOOK,
+    EMAIL,
+    WHATSAPP,
+````
+**-----------------------------------------------------------------------------**
+## 22.Eliminar contacto(detalle)
+**Endpoint:**
+
+DELETE: http://localhost:8080/caserito_api/detalle/{ID_detalle}
+
+
+**-----------------------------------------------------------------------------**
+## 23. Agregar menu
+
+**Endpoint:**
+
+POST: http://localhost:8080/caserito_api/menu/{Id_restaurante}
+
+**Body**
+
+````
+{
+    "nombre": "Tipakay",
+    "descripcion": "Comida combina dulce con salado",
+    "img": "https://img-global.cpcdn.com/recipes/819cb89210d39293/1200x630cq70/photo.jpg",
+    "precio": 7.9
+}
+````
+**-----------------------------------------------------------------------------**
+## 24. Eliminar menu
+
+**Endpoint:**
+
+DELETE: http://localhost:8080/caserito_api/menu/{Id_restaurante}
+
+
+**-----------------------------------------------------------------------------**
+## 25. Ver menu
+
+**Endpoint:**
+
+GET: http://localhost:8080/caserito_api/menu/{Id_restaurante}
+
+**-----------------------------------------------------------------------------**
+## 25. Editar menu
+
+**Endpoint:**
+
+DELETE: http://localhost:8080/caserito_api/detalle/{ID_detalle}
+**-----------------------------------------------------------------------------**
+## 26. Busqueda
+
+**Endpoint:**
+
+GET: http://localhost:8080/caserito_api/restaurante/buscar?nombre=<Nomre del restaurante>
+
+**Resultado**
+
+````
+
+[
+    {
+        "restaurantId": 1,
+        "nombre": "Parada 22",
+        "descripcion": "Comida china 2",
+        "ubicacion": "Francisco de Orellana, Nueva Loja, Ecuador",
+        "tipo": "Postres",
+        "img": "https://dfmas.df.cl/dfmas/site/artic/20220922/imag/foto_0000002020220922191520/Copia_de_Hyatt_Centric_Lima-050407.jpg",
+        "horaApertura": null,
+        "horaCierre": null,
+        "distancia": "2,036 km",
+        "tiempo": "1 day 10 hours",
+        "calificacion": 5.0
+    }
+]
+
+````
+**eJEMPLO**
+````
+http://localhost:8080/caserito_api/restaurante/buscar?nombre=Parada 22
+````
+
+**-----------------------------------------------------------------------------**
+**-----------------------------------------------------------------------------**
+**-----------------------------------------------------------------------------**
+**-----------------------------------------------------------------------------**
+**-----------------------------------------------------------------------------**
+
 
 **⚠ Notas Finales**
 

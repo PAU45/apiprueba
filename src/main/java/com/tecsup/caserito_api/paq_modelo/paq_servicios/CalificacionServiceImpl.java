@@ -70,4 +70,28 @@ public class CalificacionServiceImpl implements  CalificacionService{
                 ))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public double calcularPromedioCalificaciones(Long restauranteId) {
+        Restaurante restaurante = restauranteRepository.findById(restauranteId)
+                .orElseThrow(() -> new RuntimeException("Restaurante no encontrado"));
+
+        // Obtener todas las calificaciones para el restaurante
+        List<Calificacion> calificaciones = calificacionRepository.findByRestaurante(restaurante);
+
+        // Verificar si existen calificaciones
+        if (calificaciones.isEmpty()) {
+            return 0.0;  // Devolver 0.0 si no hay calificaciones
+        }
+
+        // Calcular el promedio
+        double promedio = calificaciones.stream()
+                .mapToDouble(Calificacion::getCalificacion) // Extraer la calificación de cada entidad
+                .average() // Calcular el promedio
+                .orElse(0.0); // En caso de que no haya calificaciones, devolver 0.0
+
+        return promedio;
+    }
+
+
 }

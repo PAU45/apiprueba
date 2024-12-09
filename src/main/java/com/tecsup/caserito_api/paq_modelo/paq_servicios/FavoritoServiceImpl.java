@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FavoritoServiceImpl implements FavoritoService{
@@ -25,19 +26,34 @@ public class FavoritoServiceImpl implements FavoritoService{
     private RestauranteRepository restauranteRepository;
 
     @Autowired
+    private CalificacionService calificacionService;
+
+    @Autowired
     private AuthService authService;
 
     @Override
-    public boolean agregarFavorito(FavoritoRequest favoritoRequest){
-        Usuario usuario =authService.getAuthenticatedUser();
-        Restaurante restaurante = restauranteRepository.findById(favoritoRequest.restauranteId()).orElseThrow(()->new RuntimeException("Restaurante no encontrado"));
+    public boolean agregarFavorito(FavoritoRequest favoritoRequest) {
+        Usuario usuario = authService.getAuthenticatedUser();
+        Restaurante restaurante = restauranteRepository.findById(favoritoRequest.restauranteId())
+                .orElseThrow(() -> new RuntimeException("Restaurante no encontrado"));
 
+        // Verificar si ya existe un favorito para este restaurante y usuario
+        Optional<Favorito> favoritoExistente = favoritoRepository.findByUsuarioAndRestaurante(usuario, restaurante);
+
+        // Si el favorito ya existe, no lo agregues de nuevo
+        if (favoritoExistente.isPresent()) {
+            return false; // Indica que el restaurante ya está en los favoritos
+        }
+
+        // Si no existe, agrega el nuevo favorito
         Favorito favorito = new Favorito();
         favorito.setUsuario(usuario);
         favorito.setRestaurante(restaurante);
         favoritoRepository.save(favorito);
-        return true;
+
+        return true; // Indica que el restaurante se agregó como favorito
     }
+
 
     @Override
     public List<RestaurantResponse> getFavoritosDelUsuario() {
@@ -68,8 +84,11 @@ public class FavoritoServiceImpl implements FavoritoService{
                         restaurante.getUbicacion(),
                         restaurante.getTipo(),
                         restaurante.getImg(),
+                        restaurante.getHoraApertura(),
+                        restaurante.getHoraCierre(),
                         null,  // Distancia nula
-                        null   // Tiempo nulo
+                        null,   // Tiempo nulo
+                        0.0    // Calificación promedio 0.0 si no tiene calificaciones
                 );
             }
 
@@ -81,6 +100,9 @@ public class FavoritoServiceImpl implements FavoritoService{
             String distancia = info[0].replace("Distancia: ", "");
             String duracion = info[1].replace("Duración: ", "");
 
+            // Calcular el promedio de las calificaciones
+            double promedioCalificacion = calificacionService.calcularPromedioCalificaciones(restaurante.getPk_restaurante());
+
             // Crear el objeto RestaurantResponse con los datos adicionales
             return new RestaurantResponse(
                     restaurante.getPk_restaurante(),
@@ -89,11 +111,15 @@ public class FavoritoServiceImpl implements FavoritoService{
                     restaurante.getUbicacion(),
                     restaurante.getTipo(),
                     restaurante.getImg(),
+                    restaurante.getHoraApertura(),
+                    restaurante.getHoraCierre(),
                     distancia,  // Incluir distancia como String
-                    duracion    // Incluir duración como String
+                    duracion,   // Incluir duración como String
+                    promedioCalificacion  // Incluir promedio de calificación
             );
         }).toList();
     }
+
 
 
 

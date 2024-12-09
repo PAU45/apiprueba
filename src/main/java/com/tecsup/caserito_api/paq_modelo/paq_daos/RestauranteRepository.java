@@ -13,6 +13,7 @@ public interface RestauranteRepository extends JpaRepository<Restaurante, Long> 
     Optional<Restaurante> findByNombreAndUsuario(String nombre, Usuario usuario);
     Optional<Restaurante> findByNombre(String nombre);
     Optional<Restaurante> findAllByTipo(String tipo);
+    List<Restaurante> findByNombreContainingIgnoreCase(String nombre);
 
 
 }

@@ -1,6 +1,5 @@
 package com.tecsup.caserito_api.paq_web;
 
-import com.tecsup.caserito_api.paq_modelo.paq_entidades.Comentario;
 import com.tecsup.caserito_api.paq_modelo.paq_servicios.ComentarioService;
 import com.tecsup.caserito_api.paq_web.paq_dto.ComentarioRequest;
 import com.tecsup.caserito_api.paq_web.paq_dto.ComentarioResponse;

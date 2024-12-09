@@ -27,31 +27,33 @@ public class RestauranteServiceImpl implements RestauranteService {
     private GeocodingService geocodingService;
 
     @Autowired
+    private CalificacionService calificacionService;
+
+    @Autowired
     private AuthService authService;
 
 
     @Override
-    public Restaurante createRestaurante(Restaurante restaurante) {
+    public String createRestaurante(Restaurante restaurante) {
 
         Usuario usuario = authService.getAuthenticatedUser();
 
-        // Verificar si ya existe un restaurante con el mismo nombre en general (no importa el usuario)
         Optional<Restaurante> existingRestaurante = restauranteRepository.findByNombre(restaurante.getNombre());
         if (existingRestaurante.isPresent()) {
             throw new RestauranteExistenteException("El restaurante con el nombre '" + restaurante.getNombre() + "' ya existe.");
         }
 
-        // Asignar el usuario al restaurante
         restaurante.setUsuario(usuario);
 
-        // Obtener las coordenadas en base a la ubicación proporcionada
         double[] coordinates = geocodingService.getCoordinates(restaurante.getUbicacion());
         restaurante.setLatitud(coordinates[0]);
         restaurante.setLongitud(coordinates[1]);
 
-        // Guardar el restaurante
-        return saveOrUpdateRestaurante(restaurante);
+        saveOrUpdateRestaurante(restaurante);
+
+        return "Restaurante creado exitosamente.";
     }
+
 
 
     public List<RestaurantResponse> getAllRestaurantes() {
@@ -78,8 +80,11 @@ public class RestauranteServiceImpl implements RestauranteService {
                                 restaurante.getUbicacion(),
                                 restaurante.getTipo(),
                                 restaurante.getImg(),
+                                restaurante.getHoraApertura(),
+                                restaurante.getHoraCierre(),
                                 null,  // Distancia nula
-                                null   // Tiempo nulo
+                                null,   // Tiempo nulo
+                                0.0    // Calificación promedio 0.0 si no tiene calificaciones
                         );
                     }
 
@@ -91,6 +96,9 @@ public class RestauranteServiceImpl implements RestauranteService {
                     String distancia = info[0].replace("Distancia: ", "");
                     String duracion = info[1].replace("Duración: ", "");
 
+                    // Calcular el promedio de las calificaciones
+                    double promedioCalificacion = calificacionService.calcularPromedioCalificaciones(restaurante.getPk_restaurante());
+
                     // Crear el objeto RestaurantResponse con los datos adicionales
                     return new RestaurantResponse(
                             restaurante.getPk_restaurante(),
@@ -99,12 +107,17 @@ public class RestauranteServiceImpl implements RestauranteService {
                             restaurante.getUbicacion(),
                             restaurante.getTipo(),
                             restaurante.getImg(),
+                            restaurante.getHoraApertura(),
+                            restaurante.getHoraCierre(),
                             distancia,      // Incluir distancia
-                            duracion        // Incluir duración
+                            duracion,       // Incluir duración
+                            promedioCalificacion  // Incluir promedio de calificación
                     );
                 })
                 .collect(Collectors.toList());
     }
+
+
 
 
 
@@ -141,22 +154,75 @@ public class RestauranteServiceImpl implements RestauranteService {
         }
     }
 
-
-
-
     private Restaurante saveOrUpdateRestaurante(Restaurante restaurante) {
         return restauranteRepository.save(restaurante);
     }
 
 
     @Override
-    public List<Restaurante> getRestaurantesPorUsuario() {
+    public List<RestaurantResponse> getRestaurantesPorUsuario() {
         // Obtener el usuario autenticado usando AuthService
         Usuario usuario = authService.getAuthenticatedUser();
 
-        // Retornar los restaurantes asociados al usuario autenticado
-        return restauranteRepository.findByUsuario(usuario);
+        // Mapear los restaurantes asociados al usuario autenticado a objetos RestaurantResponse
+        return restauranteRepository.findByUsuario(usuario).stream()
+                .map(restaurante -> {
+                    // Obtener las coordenadas del usuario y del restaurante
+                    double latUsuario = usuario.getLatitud();
+                    double lngUsuario = usuario.getLongitud();
+
+                    double latRestaurante = restaurante.getLatitud();
+                    double lngRestaurante = restaurante.getLongitud();
+
+                    // Verificar si las coordenadas del usuario son válidas
+                    if (latUsuario == 0.0 || lngUsuario == 0.0) {
+                        // Si las coordenadas no son válidas (0.0), asignamos valores nulos para la distancia y el tiempo
+                        return new RestaurantResponse(
+                                restaurante.getPk_restaurante(),
+                                restaurante.getNombre(),
+                                restaurante.getDescripcion(),
+                                restaurante.getUbicacion(),
+                                restaurante.getTipo(),
+                                restaurante.getImg(),
+                                restaurante.getHoraApertura(),
+                                restaurante.getHoraCierre(),
+                                null,  // Distancia nula
+                                null,   // Tiempo nulo
+                                0.0    // Calificación promedio 0.0 si no tiene calificaciones
+                        );
+                    }
+
+                    // Llamar al servicio getDirections para obtener la distancia y el tiempo estimado
+                    String direccionInfo = geocodingService.getDirections(latUsuario, lngUsuario, latRestaurante, lngRestaurante);
+
+                    // Extraer la distancia y duración de la respuesta
+                    String[] info = direccionInfo.split(", ");
+                    String distancia = info[0].replace("Distancia: ", "");
+                    String duracion = info[1].replace("Duración: ", "");
+
+                    // Calcular el promedio de las calificaciones
+                    double promedioCalificacion = calificacionService.calcularPromedioCalificaciones(restaurante.getPk_restaurante());
+
+                    // Crear el objeto RestaurantResponse con los datos adicionales
+                    return new RestaurantResponse(
+                            restaurante.getPk_restaurante(),
+                            restaurante.getNombre(),
+                            restaurante.getDescripcion(),
+                            restaurante.getUbicacion(),
+                            restaurante.getTipo(),
+                            restaurante.getImg(),
+                            restaurante.getHoraApertura(),
+                            restaurante.getHoraCierre(),
+                            distancia,      // Incluir distancia
+                            duracion,       // Incluir duración
+                            promedioCalificacion  // Incluir promedio de calificación
+                    );
+                })
+                .collect(Collectors.toList());
     }
+
+
+
 
 
     @Override
@@ -188,6 +254,12 @@ public class RestauranteServiceImpl implements RestauranteService {
         if(restauranteDetalles.getImg() != null && !restauranteDetalles.getImg().equals(restaurante.getImg())) {
             restaurante.setImg(restauranteDetalles.getImg());
         }
+        if(restauranteDetalles.getHoraApertura() != null && restauranteDetalles.getHoraApertura().equals(restaurante.getHoraApertura())) {
+            restaurante.setHoraApertura(null);
+        }
+        if (restauranteDetalles.getHoraCierre() != null && restauranteDetalles.getHoraCierre().equals(restaurante.getHoraCierre())) {
+            restaurante.setHoraCierre(null);
+        }
         if (restauranteDetalles.getDescripcion() != null && !restauranteDetalles.getDescripcion().equals(restaurante.getDescripcion())) {
             restaurante.setDescripcion(restauranteDetalles.getDescripcion());
         }
@@ -201,20 +273,73 @@ public class RestauranteServiceImpl implements RestauranteService {
             restaurante.setLongitud(coordinates[1]);
         }
 
-
-        if (restauranteDetalles.getFk_menu() != null && !restauranteDetalles.getFk_menu().equals(restaurante.getFk_menu())) {
-            restaurante.setFk_menu(restauranteDetalles.getFk_menu());
-        }
-
-        if (restauranteDetalles.getFk_detalle() != null && !restauranteDetalles.getFk_detalle().equals(restaurante.getFk_detalle())) {
-            restaurante.setFk_detalle(restauranteDetalles.getFk_detalle());
-        }
-
         // Guardar y retornar el restaurante actualizado
         return saveOrUpdateRestaurante(restaurante);
     }
 
+    @Override
+    public List<RestaurantResponse> getRestauranteByNombre(String nombre) {
+        // Buscar restaurantes por nombre, considerando que la búsqueda no es sensible a mayúsculas y minúsculas
+        List<Restaurante> restaurantes = restauranteRepository.findByNombreContainingIgnoreCase(nombre);
 
+        // Mapear la lista de Restaurantes a RestaurantResponse usando stream
+        return restaurantes.stream()
+                .map(restaurante -> {
+                    // Obtener el usuario autenticado
+                    Usuario usuario = authService.getAuthenticatedUser();
+
+                    // Obtener las coordenadas del usuario y del restaurante
+                    double latUsuario = usuario.getLatitud();
+                    double lngUsuario = usuario.getLongitud();
+
+                    double latRestaurante = restaurante.getLatitud();
+                    double lngRestaurante = restaurante.getLongitud();
+
+                    // Verificar si las coordenadas del usuario son válidas
+                    if (latUsuario == 0.0 || lngUsuario == 0.0) {
+                        return new RestaurantResponse(
+                                restaurante.getPk_restaurante(),
+                                restaurante.getNombre(),
+                                restaurante.getDescripcion(),
+                                restaurante.getUbicacion(),
+                                restaurante.getTipo(),
+                                restaurante.getImg(),
+                                restaurante.getHoraApertura(),
+                                restaurante.getHoraCierre(),
+                                null,  // Distancia nula
+                                null,   // Tiempo nulo
+                                0.0    // Calificación promedio 0.0 si no tiene calificaciones
+                        );
+                    }
+
+                    // Llamar al servicio getDirections para obtener la distancia y el tiempo estimado
+                    String direccionInfo = geocodingService.getDirections(latUsuario, lngUsuario, latRestaurante, lngRestaurante);
+
+                    // Extraer la distancia y duración de la respuesta
+                    String[] info = direccionInfo.split(", ");
+                    String distancia = info[0].replace("Distancia: ", "");
+                    String duracion = info[1].replace("Duración: ", "");
+
+                    // Calcular el promedio de las calificaciones
+                    double promedioCalificacion = calificacionService.calcularPromedioCalificaciones(restaurante.getPk_restaurante());
+
+                    // Crear el objeto RestaurantResponse con los datos adicionales
+                    return new RestaurantResponse(
+                            restaurante.getPk_restaurante(),
+                            restaurante.getNombre(),
+                            restaurante.getDescripcion(),
+                            restaurante.getUbicacion(),
+                            restaurante.getTipo(),
+                            restaurante.getImg(),
+                            restaurante.getHoraApertura(),
+                            restaurante.getHoraCierre(),
+                            distancia,      // Incluir distancia
+                            duracion,       // Incluir duración
+                            promedioCalificacion  // Incluir promedio de calificación
+                    );
+                })
+                .collect(Collectors.toList());
+    }
 
 
 }

@@ -8,7 +8,8 @@ import java.util.List;
 
 public interface RestauranteService {
 
-    Restaurante createRestaurante(Restaurante restaurante);
+
+    String createRestaurante(Restaurante restaurante);
 
     List<RestaurantResponse> getAllRestaurantes();
 
@@ -19,7 +20,9 @@ public interface RestauranteService {
     ResponseEntity<?> deleteRestaurante(Long id);
 
 
-    List<Restaurante> getRestaurantesPorUsuario();
+    List<RestaurantResponse> getRestaurantesPorUsuario();
 
     Restaurante updateRestaurante(Long id, Restaurante restauranteDetalles);
+
+    List<RestaurantResponse> getRestauranteByNombre(String nombre);
 }

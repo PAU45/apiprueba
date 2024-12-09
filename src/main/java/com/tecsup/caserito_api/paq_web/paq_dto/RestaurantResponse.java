@@ -1,5 +1,7 @@
 package com.tecsup.caserito_api.paq_web.paq_dto;
 
+import java.time.LocalTime;
+
 public record RestaurantResponse(
         Long restaurantId,
         String nombre,
@@ -7,7 +9,12 @@ public record RestaurantResponse(
         String ubicacion,
         String tipo,
         String img,
-        String distancia,  // Cambio de Long a String
-        String tiempo      // Cambio de Long a String
+        LocalTime horaApertura,  // Ahora tipo LocalTime
+        LocalTime horaCierre,    // Ahora tipo LocalTime
+        String distancia,        // Cambiado a String para distancia
+        String tiempo,
+        double calificacion
 ) {
 }
+
+

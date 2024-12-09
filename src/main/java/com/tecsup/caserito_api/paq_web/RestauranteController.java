@@ -19,29 +19,19 @@ public class RestauranteController {
     @Autowired
     private RestauranteService restauranteService;
 
-    // Endpoint para crear un restaurante
     @PostMapping("/create")
-    public Restaurante crearRestaurante(@RequestBody Restaurante restaurante) {
-        return restauranteService.createRestaurante(restaurante);
+    public ResponseEntity<String> crearRestaurante(@RequestBody Restaurante restaurante) {
+        String mensaje = restauranteService.createRestaurante(restaurante);
+        return ResponseEntity.ok(mensaje);
     }
 
-
-    // Ruta GET de prueba para verificar la conectividad
-    @GetMapping("/prueba")
-    public String prueba() {
-        return "Hola"; // Responde con un mensaje simple
-    }
-
-    @PostMapping()
-    public List<Restaurante> listarRestaurantes(Double latitude, Double longitude
-    ){
-        return null;
-    }
 
     @GetMapping("/mis-restaurantes")
-    public List<Restaurante> obtenerRestaurantesDelUsuario() {
-        return restauranteService.getRestaurantesPorUsuario();
+    public ResponseEntity<List<RestaurantResponse>> obtenerRestaurantesDelUsuario() {
+        List<RestaurantResponse> restaurantes = restauranteService.getRestaurantesPorUsuario();
+        return ResponseEntity.ok(restaurantes);
     }
+
 
     @GetMapping("/all")
     public List<RestaurantResponse> obtenerRestaurantes() {
@@ -51,8 +41,11 @@ public class RestauranteController {
     @PutMapping("/update/{id}")
     public ResponseEntity<?> actualizarRestaurante(@PathVariable Long id, @RequestBody Restaurante restauranteDetalles) {
         try {
-            Restaurante updatedRestaurante = restauranteService.updateRestaurante(id, restauranteDetalles);
-            return ResponseEntity.ok(updatedRestaurante);
+            // Llamar al servicio de actualización sin esperar un retorno
+            restauranteService.updateRestaurante(id, restauranteDetalles);
+
+            // Retornar respuesta sin cuerpo indicando éxito
+            return ResponseEntity.noContent().build();
         } catch (RestauranteExistenteException e) {
             // Manejar excepción de restaurante existente
             return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
@@ -67,6 +60,7 @@ public class RestauranteController {
     }
 
 
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteRestaurante(@PathVariable Long id) {
         try {
@@ -79,6 +73,14 @@ public class RestauranteController {
                     .body(new ErrorResponse("Error al eliminar restaurante: " + e.getMessage()));
         }
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<RestaurantResponse>> buscarRestaurantePorNombre(@RequestParam String nombre) {
+        List<RestaurantResponse> restaurantes = restauranteService.getRestauranteByNombre(nombre);
+        return ResponseEntity.ok(restaurantes);
+    }
+
+
 
 
 

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,19 +46,17 @@ public class Restaurante {
     private String tipo;
 
     @Column(nullable = true)
+    @Size(max = 2000)
     private String img;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fk_usuario", nullable = false)
     private Usuario usuario;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "restaurante_menu", joinColumns = @JoinColumn(name = "fk_restaurante"), inverseJoinColumns = @JoinColumn(name = "fk_menu"))
-    private Set<Menu> fk_menu = new HashSet<>();
+    @Column(nullable = true)
+    private LocalTime horaApertura;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "restaurante_detalle", joinColumns = @JoinColumn(name = "fk_restaurante"), inverseJoinColumns = @JoinColumn(name = "fk_detalle"))
-    private Set<Detalle> fk_detalle = new HashSet<>();
-
+    @Column(nullable = true)
+    private LocalTime horaCierre;
 
 }

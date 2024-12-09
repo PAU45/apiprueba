@@ -45,8 +45,10 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.POST, "/caserito_api/restaurante/*").hasAuthority("EMPRESA")
                             .requestMatchers(HttpMethod.GET, "/caserito_api/restaurante/mis-restaurantes").hasAuthority("EMPRESA")
                             .requestMatchers(HttpMethod.GET, "/caserito_api/restaurante/all").hasAnyAuthority("USER", "EMPRESA")
+                            .requestMatchers(HttpMethod.GET, "/caserito_api/restaurante/buscar").hasAnyAuthority("USER", "EMPRESA")
                             .requestMatchers(HttpMethod.PUT, "/caserito_api/restaurante/update/{id}").hasAuthority("EMPRESA")
                             .requestMatchers(HttpMethod.DELETE, "/caserito_api/restaurante/delete/{id}").hasAuthority("EMPRESA")
+                            .requestMatchers(HttpMethod.GET, "/caserito_api/restaurante/{id}/ruta").hasAnyAuthority("USER", "EMPRESA")
 
                             .requestMatchers(HttpMethod.PUT, "/caserito_api/comentarios/agregar").hasAnyAuthority("USER")
                             .requestMatchers(HttpMethod.GET, "/caserito_api/comentarios/restaurante/{restauranteId}").hasAnyAuthority("USER")
@@ -56,10 +58,17 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.GET, "/caserito_api/calificacion/restaurante/{restauranteId}").hasAnyAuthority("USER", "EMPRESA")
                             .requestMatchers(HttpMethod.GET, "/caserito_api/favorito").hasAnyAuthority("USER", "EMPRESA")
 
-                            .requestMatchers(HttpMethod.POST, "/caserito_api/detalles/{restauranteId}").hasAnyAuthority("EMPRESA")
-                            .requestMatchers(HttpMethod.GET, "/caserito_api/detalles").hasAnyAuthority("USER","EMPRESA")
-                            .requestMatchers(HttpMethod.GET, "/caserito_api/detalles/{tipo}").hasAnyAuthority("USER","EMPRESA")
-                            .requestMatchers(HttpMethod.GET, "/caserito_api/restaurante/{id}/ruta").hasAnyAuthority("USER", "EMPRESA")
+                            .requestMatchers(HttpMethod.POST, "/caserito_api/detalle/{restauranteId}").hasAnyAuthority("EMPRESA")
+                            .requestMatchers(HttpMethod.GET, "/caserito_api/detalle/{restauranteId}").hasAnyAuthority("USER","EMPRESA")
+                            .requestMatchers(HttpMethod.DELETE, "/caserito_api/detalle/{detalleId}").hasAnyAuthority("EMPRESA")
+
+                            .requestMatchers(HttpMethod.POST, "/caserito_api/menu/{restauranteId}").hasAnyAuthority("EMPRESA")
+                            .requestMatchers(HttpMethod.GET, "/caserito_api/menu/{restauranteId}").hasAnyAuthority("USER","EMPRESA")
+                            .requestMatchers(HttpMethod.DELETE, "/caserito_api/menu/{menuId}").hasAnyAuthority("EMPRESA")
+                            .requestMatchers(HttpMethod.PUT, "/caserito_api/menu/{menuId}").hasAnyAuthority("EMPRESA")
+
+
+
                             .anyRequest().authenticated();
                 })
                 .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)

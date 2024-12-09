@@ -6,6 +6,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 
 @Setter
 @Getter
@@ -17,7 +20,7 @@ import lombok.*;
 public class Menu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int pk_menu;
+    private Long pk_menu;
 
     @Column(nullable = false)
     @NotNull
@@ -27,16 +30,20 @@ public class Menu {
 
     @Column(nullable = false)
     @NotNull
-    @Size(max = 500)
+    @Size(max = 1500)
     private String descripcion;
 
     @Column(nullable = true)
     @NotNull
-    @Size(max = 500)
-    private String imagen;
+    private String img;
 
     @Column(nullable = false)
     @NotNull
-    @Max(50)
     private Long precio;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_restaurante", nullable = false)
+    private Restaurante restaurante;
+
+
 }
