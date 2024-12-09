@@ -19,6 +19,9 @@ public class FavoritoServiceImpl implements FavoritoService{
     private FavoritoRepository favoritoRepository;
 
     @Autowired
+    private GeocodingService geocodingService;
+
+    @Autowired
     private RestauranteRepository restauranteRepository;
 
     @Autowired
@@ -47,15 +50,51 @@ public class FavoritoServiceImpl implements FavoritoService{
         // Convertir Favorito a RestaurantResponse
         return favoritos.stream().map(favorito -> {
             Restaurante restaurante = favorito.getRestaurante();
+
+            // Obtener las coordenadas del usuario y del restaurante
+            double latUsuario = usuario.getLatitud();
+            double lngUsuario = usuario.getLongitud();
+
+            double latRestaurante = restaurante.getLatitud();
+            double lngRestaurante = restaurante.getLongitud();
+
+            // Comprobar si las coordenadas del usuario son válidas
+            if (latUsuario == 0.0 || lngUsuario == 0.0) {
+                // Si las coordenadas no son válidas (0.0), asignamos valores nulos para la distancia y el tiempo
+                return new RestaurantResponse(
+                        restaurante.getPk_restaurante(),
+                        restaurante.getNombre(),
+                        restaurante.getDescripcion(),
+                        restaurante.getUbicacion(),
+                        restaurante.getTipo(),
+                        restaurante.getImg(),
+                        null,  // Distancia nula
+                        null   // Tiempo nulo
+                );
+            }
+
+            // Si las coordenadas son válidas, obtenemos la distancia y el tiempo
+            String direccionInfo = geocodingService.getDirections(latUsuario, lngUsuario, latRestaurante, lngRestaurante);
+
+            // Extraer la distancia y duración de la respuesta
+            String[] info = direccionInfo.split(", ");
+            String distancia = info[0].replace("Distancia: ", "");
+            String duracion = info[1].replace("Duración: ", "");
+
+            // Crear el objeto RestaurantResponse con los datos adicionales
             return new RestaurantResponse(
                     restaurante.getPk_restaurante(),
                     restaurante.getNombre(),
                     restaurante.getDescripcion(),
                     restaurante.getUbicacion(),
                     restaurante.getTipo(),
-                    restaurante.getImg()
+                    restaurante.getImg(),
+                    distancia,  // Incluir distancia como String
+                    duracion    // Incluir duración como String
             );
         }).toList();
     }
+
+
 
 }

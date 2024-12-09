@@ -21,4 +21,8 @@ public class Detalle {
     @Column(name = "detalles_tipo")
     @Enumerated(EnumType.STRING)
     private DestallesEnum tipo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_restaurante", nullable = false)
+    private Restaurante restaurante; // Relación con Restaurante
 }
