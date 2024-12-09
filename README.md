@@ -5,29 +5,31 @@
 1. **Registrar usuario** usando el endpoint `sign-up`.
 2. **Iniciar sesión** para obtener un token de acceso.
 3. Probar autenticación.
-4.  Usar el token para hacer solicitudes autenticadas.
-5.  **Actualizar usuario** para cambiar información como email, teléfono y dirección. Recuerda que el token se invalida y necesitas obtener uno nuevo.
-6.  **Convertirse en empresa** si el usuario no tiene ese rol, usando el endpoint de `create`.
-7.  **Agregar un restaurante** proporcionando el nombre, ubicación y descripción.
-8. Ver lista de restaurantes.
-9. Ver mi lista de restaurantes.
-10. Eliminar un restaurante.
-11. Editar informacion de mi restaurante.
-12. Ver mis datos.
-13. Agregar un comentario.
-14. Listar comentarios por restaurante.
-15. Agregar calificacion.
-16. Ver calificacion.
-17. Agregar un favorito.
-18. Lista de restaurantes favoritos.
-19. Ruta para ubicacion de restaurante.
-20. Agergar contactos(detalle).
-21. Ver contactos(detalle).
-22. Eliminar contacto(detalle).
-23. Agregar menu.
-24. Eliminar menu.
-25. Ver menus.
-26. Editar menu.
+4. **Actualizar usuario** para cambiar información como email, teléfono y dirección. Recuerda que el token se invalida y necesitas obtener uno nuevo.
+5. **Convertirse en empresa** si el usuario no tiene ese rol, usando el endpoint de `create`.
+6. **Agregar un restaurante** proporcionando el nombre, ubicación y descripción.
+7. Ver lista de restaurantes.
+8. Ver mi lista de restaurantes.
+9. Eliminar un restaurante.
+10. Editar informacion de mi restaurante.
+11. Ver mis datos.
+12. Agregar un comentario.
+13. Listar comentarios por restaurante.
+14. Agregar calificacion.
+15. Ver calificacion.
+16. Agregar un favorito.
+17. Lista de restaurantes favoritos.
+18. Ruta para ubicacion de restaurante.
+19. Agergar contactos(detalle).
+20. Ver contactos(detalle).
+21. Eliminar contacto(detalle).
+22. Agregar menu.
+23. Eliminar menu.
+24. Ver menus.
+25. Editar menu.
+26. Busqueda (nombre de restaurante)
+27. Filtrar por tipo
+28. Eliminar favorito
 
 ## 1. Registrar usuario
 **Endpoint:**
@@ -162,7 +164,7 @@ POST http://localhost:8080/caserito_api/restaurante/create
 
 **-----------------------------------------------------------------------------**
 
-## 8. Ver mi lista de restaurantes
+## 7. Ver mi lista de restaurantes
 
 **Endpoint:**
 
@@ -175,7 +177,7 @@ GET: http://localhost:8080/caserito_api/restaurante/mis-restaurantes
 
 **-----------------------------------------------------------------------------**
 
-## 9. Ver lista de restaurantes
+## 8. Ver lista de restaurantes
 
 **Endpoint:**
 
@@ -187,7 +189,7 @@ GET: http://localhost:8080/caserito_api/restaurante/all
 
 
 **-----------------------------------------------------------------------------**
-## 10. Editar informacion de mi restaurante
+## 9. Editar informacion de mi restaurante
 
 **Endpoint:**
 
@@ -208,7 +210,7 @@ PUT: http://localhost:8080/caserito_api/restaurante/update/{id}
 *Solo ingresar los campos que se requiere cambiar*
 
 **-----------------------------------------------------------------------------**
-## 11. Eliminar un restaurante
+## 10. Eliminar un restaurante
 
 **Endpoint:**
 
@@ -237,13 +239,13 @@ DELETE:http://localhost:8080/caserito_api/restaurante/delete/{id}
 
 ````
 **-----------------------------------------------------------------------------**
-## 12. Obtener mis datos
+## 11. Obtener mis datos
 
 **Endpoint:**
 GET: http://localhost:8080/caserito_api/user/me
 
 **-----------------------------------------------------------------------------**
-## 13. Agregar un comentario.
+## 12. Agregar un comentario.
 
 **Endpoint:**
 
@@ -264,7 +266,7 @@ POST: http://localhost:8080/caserito_api/comentarios/agregar
 ** Comentario agregado con éxito **
 
 **-----------------------------------------------------------------------------**
-## 14. Listar comentarios por restaurante
+## 13. Listar comentarios por restaurante
 **Endpoint:**
 
 GET: http://localhost:8080/caserito_api/comentarios/restaurante/{ID}
@@ -290,7 +292,7 @@ GET: http://localhost:8080/caserito_api/comentarios/restaurante/{ID}
 ````
 
 **-----------------------------------------------------------------------------**
-## 15. Agregar calificacion
+## 14. Agregar calificacion
 **Endpoint:**
 
 POST: http://localhost:8080/caserito_api/calificacion/agregar
@@ -310,7 +312,7 @@ POST: http://localhost:8080/caserito_api/calificacion/agregar
 
 ````
 **-----------------------------------------------------------------------------**
-## 16. Ver calificacion.
+## 15. Ver calificacion.
 **Endpoint:**
 
 GET: http://localhost:8080/caserito_api/calificacion/restaurante/{id}
@@ -328,7 +330,7 @@ GET: http://localhost:8080/caserito_api/calificacion/restaurante/{id}
 ]
 ````
 **-----------------------------------------------------------------------------**
-## 17. Agregar un favorito
+## 16. Agregar un favorito
 **Endpoint:**
 
 POST: http://localhost:8080/caserito_api/favorito/agregar
@@ -341,13 +343,36 @@ POST: http://localhost:8080/caserito_api/favorito/agregar
 }
 ````
 **-----------------------------------------------------------------------------**
-## 18. Lista de restaurantes favoritos
+## 17. Lista de restaurantes favoritos
 **Endpoint:**
 
 GET: http://localhost:8080/caserito_api/favorito
 
+**Resultado**
+
+````
+
+[
+    {
+        "favoriteId": 2,
+        "restaurantId": 1,
+        "nombre": "Parada 22",
+        "descripcion": "Comida china 2",
+        "ubicacion": "Francisco de Orellana, Nueva Loja, Ecuador",
+        "tipo": "Postres",
+        "img": "https://dfmas.df.cl/dfmas/site/artic/20220922/imag/foto_0000002020220922191520/Copia_de_Hyatt_Centric_Lima-050407.jpg",
+        "horaApertura": null,
+        "horaCierre": null,
+        "distancia": "2,036 km",
+        "tiempo": "1 day 10 hours",
+        "calificacion": 5.0
+    }
+]
+
+````
+
 **-----------------------------------------------------------------------------**
-## 19. Ruta para ubicacion de restaurante
+## 18. Ruta para ubicacion de restaurante
 **Endpoint:**
 
 GET: http://localhost:8080/caserito_api/restaurante/{id}/ruta
@@ -369,7 +394,7 @@ GET: http://localhost:8080/caserito_api/restaurante/{id}/ruta
 **-----------------------------------------------------------------------------**
 **-----------------------------------------------------------------------------**
 **-----------------------------------------------------------------------------**
-## 20. Agergar contactos(detalle)
+## 19. Agregar contactos(detalle)
 **Endpoint:**
 
 POST: http://localhost:8080/caserito_api/detalle/{id_restaurante}
@@ -383,7 +408,7 @@ POST: http://localhost:8080/caserito_api/detalle/{id_restaurante}
 }
 ````
 **-----------------------------------------------------------------------------**
-## 21.Ver contactos(detalle)
+## 20.Ver contactos(detalle)
 **Endpoint:**
 
 GET: http://localhost:8080/caserito_api/detalle/{id_restaurante}
@@ -397,14 +422,14 @@ GET: http://localhost:8080/caserito_api/detalle/{id_restaurante}
     WHATSAPP,
 ````
 **-----------------------------------------------------------------------------**
-## 22.Eliminar contacto(detalle)
+## 21.Eliminar contacto(detalle)
 **Endpoint:**
 
 DELETE: http://localhost:8080/caserito_api/detalle/{ID_detalle}
 
 
 **-----------------------------------------------------------------------------**
-## 23. Agregar menu
+## 22. Agregar menu
 
 **Endpoint:**
 
@@ -421,7 +446,7 @@ POST: http://localhost:8080/caserito_api/menu/{Id_restaurante}
 }
 ````
 **-----------------------------------------------------------------------------**
-## 24. Eliminar menu
+## 23. Eliminar menu
 
 **Endpoint:**
 
@@ -429,7 +454,7 @@ DELETE: http://localhost:8080/caserito_api/menu/{Id_restaurante}
 
 
 **-----------------------------------------------------------------------------**
-## 25. Ver menu
+## 24. Ver menus.
 
 **Endpoint:**
 
@@ -515,6 +540,13 @@ http://localhost:8080/caserito_api/restaurante/tipo?tipo=Postres
 
 
 **-----------------------------------------------------------------------------**
+## 28. Eliminar favorito
+
+**Endpoint:**
+
+DELETE: http://localhost:8080/caserito_api/favorito/eliminar/{Id_favorito}
+
+
 **-----------------------------------------------------------------------------**
 **-----------------------------------------------------------------------------**
 **-----------------------------------------------------------------------------**

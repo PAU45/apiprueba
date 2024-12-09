@@ -6,6 +6,7 @@ import com.tecsup.caserito_api.paq_modelo.paq_entidades.Favorito;
 import com.tecsup.caserito_api.paq_modelo.paq_entidades.Restaurante;
 import com.tecsup.caserito_api.paq_modelo.paq_entidades.Usuario;
 import com.tecsup.caserito_api.paq_web.paq_dto.FavoritoRequest;
+import com.tecsup.caserito_api.paq_web.paq_dto.FavoritoResponse;
 import com.tecsup.caserito_api.paq_web.paq_dto.RestaurantResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,16 +55,15 @@ public class FavoritoServiceImpl implements FavoritoService{
         return true; // Indica que el restaurante se agregó como favorito
     }
 
-
     @Override
-    public List<RestaurantResponse> getFavoritosDelUsuario() {
+    public List<FavoritoResponse> getFavoritosDelUsuario() {
         // Obtener el usuario autenticado
         Usuario usuario = authService.getAuthenticatedUser();
 
         // Obtener los favoritos del usuario
         List<Favorito> favoritos = favoritoRepository.findByUsuario(usuario);
 
-        // Convertir Favorito a RestaurantResponse
+        // Convertir Favorito a FavoritoResponse
         return favoritos.stream().map(favorito -> {
             Restaurante restaurante = favorito.getRestaurante();
 
@@ -77,8 +77,9 @@ public class FavoritoServiceImpl implements FavoritoService{
             // Comprobar si las coordenadas del usuario son válidas
             if (latUsuario == 0.0 || lngUsuario == 0.0) {
                 // Si las coordenadas no son válidas (0.0), asignamos valores nulos para la distancia y el tiempo
-                return new RestaurantResponse(
-                        restaurante.getPk_restaurante(),
+                return new FavoritoResponse(
+                        favorito.getPk_favorito(),               // ID del favorito
+                        restaurante.getPk_restaurante(), // ID del restaurante
                         restaurante.getNombre(),
                         restaurante.getDescripcion(),
                         restaurante.getUbicacion(),
@@ -103,9 +104,10 @@ public class FavoritoServiceImpl implements FavoritoService{
             // Calcular el promedio de las calificaciones
             double promedioCalificacion = calificacionService.calcularPromedioCalificaciones(restaurante.getPk_restaurante());
 
-            // Crear el objeto RestaurantResponse con los datos adicionales
-            return new RestaurantResponse(
-                    restaurante.getPk_restaurante(),
+            // Crear el objeto FavoritoResponse con los datos adicionales
+            return new FavoritoResponse(
+                    favorito.getPk_favorito(),               // ID del favorito
+                    restaurante.getPk_restaurante(), // ID del restaurante
                     restaurante.getNombre(),
                     restaurante.getDescripcion(),
                     restaurante.getUbicacion(),
@@ -118,6 +120,17 @@ public class FavoritoServiceImpl implements FavoritoService{
                     promedioCalificacion  // Incluir promedio de calificación
             );
         }).toList();
+    }
+
+
+    @Override
+    public boolean eliminarFavorito(Long favoritoId) {
+        try {
+            favoritoRepository.deleteById(favoritoId);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 
