@@ -475,6 +475,45 @@ http://localhost:8080/caserito_api/restaurante/buscar?nombre=Parada 22
 ````
 
 **-----------------------------------------------------------------------------**
+## 27. Filtrado por tipo
+
+**Endpoint:**
+
+GET: http://localhost:8080/caserito_api/restaurante/tipo?tipo=<Tipo>
+
+
+**Ejemplo**
+
+````
+
+http://localhost:8080/caserito_api/restaurante/tipo?tipo=Postres
+
+````
+
+**Resultado**
+
+````
+
+[
+    {
+        "restaurantId": 1,
+        "nombre": "Parada 22",
+        "descripcion": "Comida china 2",
+        "ubicacion": "Francisco de Orellana, Nueva Loja, Ecuador",
+        "tipo": "Postres",
+        "img": "https://dfmas.df.cl/dfmas/site/artic/20220922/imag/foto_0000002020220922191520/Copia_de_Hyatt_Centric_Lima-050407.jpg",
+        "horaApertura": null,
+        "horaCierre": null,
+        "distancia": "2,036 km",
+        "tiempo": "1 day 10 hours",
+        "calificacion": 5.0
+    }
+]
+````
+
+
+
+
 **-----------------------------------------------------------------------------**
 **-----------------------------------------------------------------------------**
 **-----------------------------------------------------------------------------**

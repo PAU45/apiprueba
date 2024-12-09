@@ -341,6 +341,58 @@ public class RestauranteServiceImpl implements RestauranteService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<RestaurantResponse> getRestaurantesPorTipo(String tipo) {
+        List<Restaurante> restaurantes = restauranteRepository.findByTipoContainingIgnoreCase(tipo);
+
+        return restaurantes.stream()
+                .map(restaurante -> {
+                    Usuario usuario = authService.getAuthenticatedUser();
+
+                    double latUsuario = usuario.getLatitud();
+                    double lngUsuario = usuario.getLongitud();
+                    double latRestaurante = restaurante.getLatitud();
+                    double lngRestaurante = restaurante.getLongitud();
+
+                    if (latUsuario == 0.0 || lngUsuario == 0.0) {
+                        return new RestaurantResponse(
+                                restaurante.getPk_restaurante(),
+                                restaurante.getNombre(),
+                                restaurante.getDescripcion(),
+                                restaurante.getUbicacion(),
+                                restaurante.getTipo(),
+                                restaurante.getImg(),
+                                restaurante.getHoraApertura(),
+                                restaurante.getHoraCierre(),
+                                null,  // Sin distancia
+                                null,  // Sin tiempo
+                                0.0    // Calificación predeterminada
+                        );
+                    }
+
+                    String direccionInfo = geocodingService.getDirections(latUsuario, lngUsuario, latRestaurante, lngRestaurante);
+                    String[] info = direccionInfo.split(", ");
+                    String distancia = info[0].replace("Distancia: ", "");
+                    String tiempo = info[1].replace("Duración: ", "");
+
+                    double promedioCalificacion = calificacionService.calcularPromedioCalificaciones(restaurante.getPk_restaurante());
+
+                    return new RestaurantResponse(
+                            restaurante.getPk_restaurante(),
+                            restaurante.getNombre(),
+                            restaurante.getDescripcion(),
+                            restaurante.getUbicacion(),
+                            restaurante.getTipo(),
+                            restaurante.getImg(),
+                            restaurante.getHoraApertura(),
+                            restaurante.getHoraCierre(),
+                            distancia,
+                            tiempo,
+                            promedioCalificacion
+                    );
+                })
+                .collect(Collectors.toList());
+    }
 
 }
 

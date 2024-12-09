@@ -80,6 +80,11 @@ public class RestauranteController {
         return ResponseEntity.ok(restaurantes);
     }
 
+    @GetMapping("/tipo")
+    public ResponseEntity<List<RestaurantResponse>> obtenerRestaurantesPorTipo(@RequestParam String tipo) {
+        List<RestaurantResponse> restaurantes = restauranteService.getRestaurantesPorTipo(tipo);
+        return ResponseEntity.ok(restaurantes);
+    }
 
 
 

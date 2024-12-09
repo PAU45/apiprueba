@@ -14,8 +14,10 @@ public interface RestauranteService {
     List<RestaurantResponse> getAllRestaurantes();
 
 
-    Restaurante getRestauranteById(Long id);
+    List<RestaurantResponse> getRestaurantesPorTipo(String tipo);
 
+
+    Restaurante getRestauranteById(Long id);
 
     ResponseEntity<?> deleteRestaurante(Long id);
 

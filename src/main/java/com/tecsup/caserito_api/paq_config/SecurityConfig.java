@@ -49,6 +49,7 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.PUT, "/caserito_api/restaurante/update/{id}").hasAuthority("EMPRESA")
                             .requestMatchers(HttpMethod.DELETE, "/caserito_api/restaurante/delete/{id}").hasAuthority("EMPRESA")
                             .requestMatchers(HttpMethod.GET, "/caserito_api/restaurante/{id}/ruta").hasAnyAuthority("USER", "EMPRESA")
+                            .requestMatchers(HttpMethod.GET, "/caserito_api/restaurante/tipo").hasAnyAuthority("USER", "EMPRESA")
 
                             .requestMatchers(HttpMethod.PUT, "/caserito_api/comentarios/agregar").hasAnyAuthority("USER")
                             .requestMatchers(HttpMethod.GET, "/caserito_api/comentarios/restaurante/{restauranteId}").hasAnyAuthority("USER")
