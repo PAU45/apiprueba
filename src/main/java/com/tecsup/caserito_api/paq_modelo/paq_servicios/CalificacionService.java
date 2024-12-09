@@ -8,4 +8,6 @@ import java.util.List;
 public interface CalificacionService {
     List<CalificacionResponse> obtenerCalificacionesPorRestaurante(Long restauranteId);
     boolean agregarCalificacion(CalificacionRequest calificacionRequest);
+
+    double calcularPromedioCalificaciones(Long restauranteId);
 }
