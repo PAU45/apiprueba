@@ -44,7 +44,8 @@ POST http://localhost:8080/caserito_api/authentication/sign-up
     "password": "12345678",
     "email": "hans@tecsup.edu.pe",
     "telefono": "128312832",
-    "direccion": "askdjnas"
+    "direccion": "Av Juan Velasco Alvarado 690, Bellavista 07011",
+    "Avatar": "https://cdn-icons-png.flaticon.com/512/3135/3135768.png"
 }
 ```
 
