@@ -52,5 +52,46 @@ public class GeocodingService {
             throw new RuntimeException("Error al obtener dirección: " + e.getMessage());
         }
     }
+
+    // Método para obtener la ruta
+    public String getDirections(double latOrigen, double lngOrigen, double latDestino, double lngDestino) {
+        try {
+            // Construir la URL de la API de Directions
+            String url = "https://maps.googleapis.com/maps/api/directions/json?origin=" + latOrigen + "," + lngOrigen +
+                    "&destination=" + latDestino + "," + lngDestino +
+                    "&key=" + GOOGLE_MAPS_API_KEY;
+
+            // Imprimir la URL que se está enviando a la API
+            System.out.println("URL enviada: " + url);
+
+            // Crear un objeto RestTemplate para hacer la solicitud
+            RestTemplate restTemplate = new RestTemplate();
+            String response = restTemplate.getForObject(url, String.class);
+
+            // Imprimir la respuesta completa de la API para inspeccionar
+            System.out.println("Respuesta de la API: " + response);
+
+            // Procesar la respuesta de la API
+            JSONObject jsonObject = new JSONObject(response);
+
+            // Verificar si la respuesta contiene rutas
+            if (jsonObject.getJSONArray("routes").length() == 0) {
+                throw new RuntimeException("No se encontró ninguna ruta.");
+            }
+
+            // Obtener la primera ruta
+            JSONObject route = jsonObject.getJSONArray("routes").getJSONObject(0);
+            JSONObject legs = route.getJSONArray("legs").getJSONObject(0);
+            String distance = legs.getJSONObject("distance").getString("text");
+            String duration = legs.getJSONObject("duration").getString("text");
+
+            // Devolver la distancia y la duración
+            return "Distancia: " + distance + ", Duración: " + duration;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener la ruta: " + e.getMessage());
+        }
+    }
+
 }
+
 
