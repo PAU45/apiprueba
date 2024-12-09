@@ -61,15 +61,9 @@ public class GeocodingService {
                     "&destination=" + latDestino + "," + lngDestino +
                     "&key=" + GOOGLE_MAPS_API_KEY;
 
-            // Imprimir la URL que se está enviando a la API
-            System.out.println("URL enviada: " + url);
-
             // Crear un objeto RestTemplate para hacer la solicitud
             RestTemplate restTemplate = new RestTemplate();
             String response = restTemplate.getForObject(url, String.class);
-
-            // Imprimir la respuesta completa de la API para inspeccionar
-            System.out.println("Respuesta de la API: " + response);
 
             // Procesar la respuesta de la API
             JSONObject jsonObject = new JSONObject(response);
