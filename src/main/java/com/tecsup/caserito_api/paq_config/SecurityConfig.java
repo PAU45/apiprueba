@@ -58,7 +58,7 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.POST, "/caserito_api/favorito/agregar").hasAnyAuthority("USER", "EMPRESA")
                             .requestMatchers(HttpMethod.GET, "/caserito_api/calificacion/restaurante/{restauranteId}").hasAnyAuthority("USER", "EMPRESA")
                             .requestMatchers(HttpMethod.GET, "/caserito_api/favorito").hasAnyAuthority("USER", "EMPRESA")
-                            .requestMatchers(HttpMethod.DELETE, "/caserito_api/favorito/eliminar/{favoritoId}").hasAnyAuthority("USER", "EMPRESA")
+                            .requestMatchers(HttpMethod.POST, "/caserito_api/favorito/eliminar").hasAnyAuthority("USER", "EMPRESA")
 
 
                             .requestMatchers(HttpMethod.POST, "/caserito_api/detalle/{restauranteId}").hasAnyAuthority("EMPRESA")

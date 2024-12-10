@@ -545,7 +545,18 @@ http://localhost:8080/caserito_api/restaurante/tipo?tipo=Postres
 
 **Endpoint:**
 
-DELETE: http://localhost:8080/caserito_api/favorito/eliminar/{Id_favorito}
+POST: http://localhost:8080/caserito_api/favorito/eliminar
+
+**Body**
+
+````
+
+{
+    "favoritoId": 123
+}
+
+
+````
 
 
 **-----------------------------------------------------------------------------**

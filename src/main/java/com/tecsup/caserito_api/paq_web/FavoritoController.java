@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/caserito_api/favorito")
@@ -37,8 +38,13 @@ public class FavoritoController {
         }
     }
 
-    @DeleteMapping("/eliminar/{favoritoId}")
-    public ResponseEntity<String> eliminarFavorito(@PathVariable("favoritoId") Long favoritoId) {
+    @PostMapping("/eliminar")
+    public ResponseEntity<String> eliminarFavorito(@RequestBody Map<String, Long> body) {
+        Long favoritoId = body.get("favoritoId");
+        if (favoritoId == null) {
+            return ResponseEntity.badRequest().body("El ID del favorito es requerido");
+        }
+
         boolean success = favoritoService.eliminarFavorito(favoritoId);
         if (success) {
             return ResponseEntity.ok("Favorito eliminado correctamente");
@@ -46,5 +52,6 @@ public class FavoritoController {
             return ResponseEntity.badRequest().body("Error al eliminar favorito");
         }
     }
+
 
 }
