@@ -202,16 +202,17 @@ public class UserDetailServiceImpl implements UserDetailsService {
         if (updateUserRequest.email() != null) {
             usuario.setEmail(updateUserRequest.email());
         }
-        if(updateUserRequest.avatar() !=null){
+        if (updateUserRequest.avatar() != null) {
             usuario.setAvatar(updateUserRequest.avatar());
         }
         if (updateUserRequest.telefono() != null) {
             usuario.setTelefono(updateUserRequest.telefono());
         }
+
+        // Actualizar la dirección, sin lanzar excepción si la geocodificación falla
         if (updateUserRequest.direccion() != null) {
             usuario.setDireccion(updateUserRequest.direccion()); // Actualizamos la dirección
 
-            // Convierte la dirección a latitud y longitud
             double latitud = 0.0;
             double longitud = 0.0;
 
@@ -225,8 +226,11 @@ public class UserDetailServiceImpl implements UserDetailsService {
                 usuario.setLatitud(latitud);
                 usuario.setLongitud(longitud);
             } catch (Exception e) {
-                // En caso de error al obtener las coordenadas, lanzamos una excepción con el mensaje adecuado
-                throw new RuntimeException("No se pudo obtener las coordenadas para la dirección proporcionada.");
+                // Si la geocodificación falla, podemos registrar la dirección sin coordenadas
+                // No lanzamos una excepción aquí, solo registramos el error
+                // La dirección se actualiza sin coordenadas
+                usuario.setLatitud(0.0); // O mantener las coordenadas anteriores si lo prefieres
+                usuario.setLongitud(0.0);
             }
         }
 
@@ -302,4 +306,5 @@ public class UserDetailServiceImpl implements UserDetailsService {
                 true
         );
     }
+
 }

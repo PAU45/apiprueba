@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 @RestController
 @RequestMapping("/caserito_api/user")
 public class UsuarioController {
@@ -54,23 +53,20 @@ public class UsuarioController {
     public ResponseEntity<AuthResponse> updateUser(
             @Validated @RequestBody UpdateUserRequest updateUserRequest) {
         try {
-            // Validar que la dirección no está vacía antes de llamar al servicio
-            if (updateUserRequest.direccion() != null && updateUserRequest.direccion().isEmpty()) {
-                throw new IllegalArgumentException("La dirección no puede estar vacía.");
-            }
-
-            // Llamar al método de servicio pasando el token
+            // Llamar al servicio de actualización sin validar si la dirección es vacía
             AuthResponse authResponse = userDetailService.updateUserDate(updateUserRequest);
 
             return new ResponseEntity<>(authResponse, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return buildErrorResponse("Error en los datos proporcionados: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (RuntimeException e) {
-            // Excepción de geocodificación o error similar
+            // Captura los errores relacionados con la geocodificación, pero no detiene la actualización
             return buildErrorResponse("Error en la geocodificación: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception ex) {
             return buildErrorResponse("Error inesperado: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
 
 }
